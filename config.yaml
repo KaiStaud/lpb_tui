@@ -1,0 +1,12 @@
+greeting: "Howdy"
+name: "DSP-Chan"
+ray: "a drop of golden sun"
+arm-length: 3.14159
+high-precision: true
+arm-number: 3
+statistics: true
+successful-drives: 3
+uptime: 5
+error-frames: 1
+main-bus: "can0"
+backup-bus: "can1"
