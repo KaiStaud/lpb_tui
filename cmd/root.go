@@ -28,17 +28,17 @@ import (
 /* config data from config.yaml */
 
 type Config struct {
-	name              string
-	ray               string
-	arm_length        float32
-	high_pecision     bool
-	arm_nuber         int
-	statistics        bool
-	successful_drives int
-	uptime            int
-	error_frames      int
-	main_bus          string
-	backup_bus        string
+	Name             string
+	Ray              string
+	ArmLength        float32
+	HighPecision     bool
+	ArmNuber         int
+	Statistics       bool
+	SuccessfulDrives int
+	Uptime           int
+	ErrorFrames      int
+	MainBus          string
+	BackupBus        string
 }
 
 /* set default values for partial missing data */
@@ -58,6 +58,7 @@ var rootCmd = &cobra.Command{
 		if err != nil {
 			log.Fatalf("could not decode config into struct")
 		}
+
 	},
 }
 
@@ -103,4 +104,18 @@ func initConfig() {
 	if err := viper.ReadInConfig(); err == nil {
 		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
 	}
+	viper.WatchConfig()
+}
+
+func LoadConfig() (config_data Config, err error) {
+	viper.AddConfigPath(".")
+	viper.SetConfigType("yaml")
+	viper.SetConfigName(".config")
+	viper.AutomaticEnv() // read in environment variables that match
+	// If a config file is found, read it in.
+	if err := viper.ReadInConfig(); err == nil {
+		fmt.Fprintln(os.Stderr, "Using config file:", viper.ConfigFileUsed())
+	}
+	viper.Unmarshal(&config_data)
+	return
 }

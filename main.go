@@ -15,7 +15,11 @@ limitations under the License.
 */
 package main
 
-import "lpb/cmd"
+import (
+	"fmt"
+	"log"
+	"lpb/cmd"
+)
 
 type coordinates struct {
 	X int
@@ -27,6 +31,24 @@ func coordinates_in_dome(cords coordinates) bool {
 	return true
 }
 
+type person struct {
+	name string
+	age  int
+}
+
+func newPerson(name string) *person {
+	p := person{name: name}
+	p.age = 42
+	return &p
+}
+
 func main() {
 	cmd.Execute()
+	//fmt.Println(viper.Get("name"))
+	config, err := cmd.LoadConfig()
+
+	if err != nil {
+		log.Fatal("error while looading config")
+	}
+	fmt.Println("Struct:", config)
 }
