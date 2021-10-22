@@ -1,7 +1,7 @@
 ## Hardware
 Any embedded linux device which meets the following requirements can be used:
 - 2 CAN Controllers (integrated or external)
-- 1 I2C Bus
+- 2 I2C Bus
 - 5 GPIO Pins
 
 Although LPBs Firmware is tested and developed on Beaglebords Beaglebone Black, any device

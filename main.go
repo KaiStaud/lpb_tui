@@ -16,9 +16,12 @@ limitations under the License.
 package main
 
 import (
+	"database/sql"
 	"fmt"
 	"log"
 	"lpb/cmd"
+
+	_ "github.com/go-sql-driver/mysql"
 )
 
 type coordinates struct {
@@ -51,4 +54,32 @@ func main() {
 		log.Fatal("error while looading config")
 	}
 	fmt.Println("Struct:", config)
+	fmt.Println("Drivers", sql.Drivers())
+
+	db, err := sql.Open("mysql", "root:passwort@tcp(127.0.0.1:3306)/test") // Just for testing
+	if err != nil {
+		log.Fatal("Couldn't open DB")
+	}
+	defer db.Close()
+
+	results, err := db.Query("select * from profiles")
+	if err != nil {
+		log.Fatal("Error by fetching data", err)
+	}
+	for results.Next() {
+		var (
+			id   int
+			name string
+			x    int
+			y    int
+			z    int
+		)
+
+		err = results.Scan(&id, &name, &x, &y, &z)
+		if err != nil {
+			log.Fatal("Error when reading data", err)
+		}
+		fmt.Printf("ID: %d, Name: %s, X: %d, Y: %d, Z: %d", id, name, x, y, z)
+	}
+
 }
