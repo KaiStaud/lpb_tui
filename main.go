@@ -18,8 +18,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
+	"io/ioutil"
 	"log"
 	"lpb/cmd"
+
+	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -81,5 +84,23 @@ func main() {
 		}
 		fmt.Printf("ID: %d, Name: %s, X: %d, Y: %d, Z: %d", id, name, x, y, z)
 	}
+
+	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
+		log.Println("Hello Microservice") // Print smth when a new request is received
+		data, err := ioutil.ReadAll(r.Body)
+
+		if err != nil {
+			http.Error(rw, "Clientside Error ocurred ", http.StatusBadRequest)
+			return
+
+		}
+		log.Printf("Data %s\n", data)
+	})
+
+	http.HandleFunc("/goodbye", func(http.ResponseWriter, *http.Request) {
+		log.Println("Goodbye Microservice") // Print smth when a new request is received
+	})
+	// Accept all requests @ port 9090
+	http.ListenAndServe(":9090", nil)
 
 }
