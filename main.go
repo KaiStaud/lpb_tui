@@ -16,11 +16,14 @@ limitations under the License.
 package main
 
 import (
-	"database/sql"
+	"context"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"lpb/cmd"
+	"lpb/handlers"
+	"os"
+	"os/signal"
+	"time"
 
 	"net/http"
 
@@ -57,50 +60,42 @@ func main() {
 		log.Fatal("error while looading config")
 	}
 	fmt.Println("Struct:", config)
-	fmt.Println("Drivers", sql.Drivers())
 
-	db, err := sql.Open("mysql", "root:passwort@tcp(127.0.0.1:3306)/test") // Just for testing
-	if err != nil {
-		log.Fatal("Couldn't open DB")
-	}
-	defer db.Close()
+	l := log.New(os.Stdout, "profile-api", log.LstdFlags)
 
-	results, err := db.Query("select * from profiles")
-	if err != nil {
-		log.Fatal("Error by fetching data", err)
-	}
-	for results.Next() {
-		var (
-			id   int
-			name string
-			x    int
-			y    int
-			z    int
-		)
+	// Create a new serve-mux and register the profile handler
+	sm := http.NewServeMux()
+	ph := handlers.NewProfiles(l)
+	sm.Handle("/", ph) // add profile handler to created serve mux
 
-		err = results.Scan(&id, &name, &x, &y, &z)
-		if err != nil {
-			log.Fatal("Error when reading data", err)
-		}
-		fmt.Printf("ID: %d, Name: %s, X: %d, Y: %d, Z: %d", id, name, x, y, z)
-	}
-
-	http.HandleFunc("/", func(rw http.ResponseWriter, r *http.Request) {
-		log.Println("Hello Microservice") // Print smth when a new request is received
-		data, err := ioutil.ReadAll(r.Body)
-
-		if err != nil {
-			http.Error(rw, "Clientside Error ocurred ", http.StatusBadRequest)
-			return
-
-		}
-		log.Printf("Data %s\n", data)
-	})
-
-	http.HandleFunc("/goodbye", func(http.ResponseWriter, *http.Request) {
-		log.Println("Goodbye Microservice") // Print smth when a new request is received
-	})
 	// Accept all requests @ port 9090
-	http.ListenAndServe(":9090", nil)
+	s := &http.Server{
+		Addr:         ":9090",
+		Handler:      sm,
+		IdleTimeout:  120 * time.Second,
+		ReadTimeout:  1 * time.Second,
+		WriteTimeout: 1 * time.Second,
+	}
+
+	// Handle http requests in go routine
+	go func() {
+		err := s.ListenAndServe()
+		if err != nil {
+			l.Fatal(err)
+		}
+	}()
+
+	// Catch OS-Signals, gracefully shutdown the services
+	// Open a new channel for this:
+	sigchan := make(chan os.Signal)
+	signal.Notify(sigchan, os.Interrupt)
+	signal.Notify(sigchan, os.Kill)
+
+	// Catch OS-Signals
+	sig := <-sigchan
+	l.Println("Received terminate, gracefully shutting down", sig)
+
+	tc, _ := context.WithTimeout(context.Background(), 30*time.Second)
+	s.Shutdown(tc)
 
 }
