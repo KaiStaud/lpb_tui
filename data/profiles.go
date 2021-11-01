@@ -33,9 +33,25 @@ func (p *Profiles) ToJSON(w io.Writer) error {
 	return e.Encode(p)
 }
 
+// Marshal list into JSON
+func (p *Profile) FromJSON(r io.Reader) error {
+	e := json.NewDecoder(r) // A bit faster than Marshal
+	return e.Decode(p)
+}
+
 // Return all saved profiles
 func GetProfiles() Profiles {
 	return productList
+}
+
+func AddProfile(p *Profile) {
+	p.ID = getNextID()
+	productList = append(productList, p)
+}
+
+func getNextID() int {
+	lp := productList[len(productList)-1]
+	return lp.ID + 1
 }
 
 // A sample list of profiles for testing
