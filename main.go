@@ -16,16 +16,9 @@ limitations under the License.
 package main
 
 import (
-	"context"
 	"fmt"
 	"log"
 	"lpb/cmd"
-	"lpb/handlers"
-	"os"
-	"os/signal"
-	"time"
-
-	"net/http"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -34,21 +27,6 @@ type coordinates struct {
 	X int
 	Y int
 	Z int
-}
-
-func coordinates_in_dome(cords coordinates) bool {
-	return true
-}
-
-type person struct {
-	name string
-	age  int
-}
-
-func newPerson(name string) *person {
-	p := person{name: name}
-	p.age = 42
-	return &p
 }
 
 func main() {
@@ -60,42 +38,5 @@ func main() {
 		log.Fatal("error while looading config")
 	}
 	fmt.Println("Struct:", config)
-
-	l := log.New(os.Stdout, "profile-api", log.LstdFlags)
-
-	// Create a new serve-mux and register the profile handler
-	sm := http.NewServeMux()
-	ph := handlers.NewProfiles(l)
-	sm.Handle("/", ph) // add profile handler to created serve mux
-
-	// Accept all requests @ port 9090
-	s := &http.Server{
-		Addr:         ":9090",
-		Handler:      sm,
-		IdleTimeout:  120 * time.Second,
-		ReadTimeout:  1 * time.Second,
-		WriteTimeout: 1 * time.Second,
-	}
-
-	// Handle http requests in go routine
-	go func() {
-		err := s.ListenAndServe()
-		if err != nil {
-			l.Fatal(err)
-		}
-	}()
-
-	// Catch OS-Signals, gracefully shutdown the services
-	// Open a new channel for this:
-	sigchan := make(chan os.Signal)
-	signal.Notify(sigchan, os.Interrupt)
-	signal.Notify(sigchan, os.Kill)
-
-	// Catch OS-Signals
-	sig := <-sigchan
-	l.Println("Received terminate, gracefully shutting down", sig)
-
-	tc, _ := context.WithTimeout(context.Background(), 30*time.Second)
-	s.Shutdown(tc)
 
 }
