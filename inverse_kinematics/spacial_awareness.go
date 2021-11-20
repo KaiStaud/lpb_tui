@@ -23,45 +23,19 @@ type tcp_element struct {
 	gamma  float32
 	length int
 }
+
 /* ------------------- Variables ------------------ */
 var (
- max_vector r3.PreciseVector
+	max_vector r3.PreciseVector
 )
 
 /* ------------------- Functions ------------------ */
 /*
 Initializes physical layout / constraints
 */
-func create(arm_list *[]arm_element, tcp tcp_element) bool {
-	// Are there 
-	if len(arm_list) > 0 {
-
-		for i := 0; i < len(arm_list); i++{
-			k := arm_list[0]
-			temp_vec = r3.NewPreciseVector(arm_list[i].lenght,0,0)
-			max_vector.Add(temp_vec)
-		}
-
-		return true
-
-	} else{
-	return false
-	}
-
-}
 
 /*
 * @ brief: Checks if passed vector is longer than fully extended arm
 * @ param: x,y,z coordinates of vector
 * @ return: vector is in range [true/false]
  */
-func check_profile_point(x float64, y float64, z float64) bool {
-	vec := r3.NewPreciseVector(x, y, z)
-	if r3.Vector.Abs().Distance() > max_vector.Vector().Distance()
-	{
-		return true
-	} else {
-		return false
-	} 
-
-}

@@ -16,6 +16,7 @@ import "errors"
 type mode int32
 
 const (
+	SETUP    = iota
 	BOOTING  = iota
 	IDLE     = iota
 	RUNNING  = iota
@@ -34,4 +35,13 @@ func SetMode(new_mode mode) (mode, error) {
 	} else {
 		return new_mode, nil
 	}
+}
+
+/*
+* @ brief: Sends a change into Error mode
+* @ param: none
+* @ return: nil if publishing was successful
+ */
+func PublishError() error {
+	// Send new mode over can:
 }
