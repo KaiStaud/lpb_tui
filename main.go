@@ -19,6 +19,7 @@ import (
 	"fmt"
 	"log"
 	"lpb/cmd"
+	"lpb/inverse_kinematics"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -39,4 +40,5 @@ func main() {
 	}
 	fmt.Println("Struct:", config)
 
+	inverse_kinematics.CalculateVectors(4, 4, 0)
 }

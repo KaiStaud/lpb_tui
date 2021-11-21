@@ -13,6 +13,7 @@ Before installing lpb on your device fetch the following dependencies with go-ge
 - Cobra (https://github.com/spf13/cobra)
 - Viper (https://github.com/spf13/viper)
 - Socket Can (https://github.com/brutella/can)
+- MathGL (https://github.com/go-gl/mathgl)
 
 ## MYSQL Setup
 After installing mysql may dont allowing access to DB with root.
