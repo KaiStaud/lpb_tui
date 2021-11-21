@@ -52,9 +52,10 @@ func CalculateVectors(x float64, y float64, z float64) error {
 	// the sum of all lengths stored in the slice vector_size!
 	length := math.Sqrt(math.Pow(x, 2) + math.Pow(y, 2))
 
-	range_of_motion = 8
+	range_of_motion = 70
 
 	if length > range_of_motion {
+		fmt.Printf("Not in Range: length = %f > 70", length)
 		return errors.New("Passed vector's size to large!")
 	} else {
 
@@ -65,19 +66,19 @@ func CalculateVectors(x float64, y float64, z float64) error {
 		// is used to calculate the vector of the first arm.
 
 		// The temporary vector can be calculated on the targets vector angle, and its half size:
-		sv.angle = math.Atan(y / z)
-		sv.size = length / 2
-		sv.x = sv.size * math.Sin(sv.angle)
+		sv.angle = math.Atan(y / x)            // in radians!
+		sv.size = 0.5 * y / math.Sin(sv.angle) // Half of sine!
+		sv.x = sv.size * math.Cos(sv.angle)
+		sv.y = sv.size * math.Sin(sv.angle)
 
-		fmt.Print("Support Vector", sv.angle)
 		// Calculate the coordinates of the normal vector:
 		// The normal vector is located at legth/2,
-		nv = math.Sqrt(math.Pow(4, 2) - math.Pow(sv.size, 2))
+		nv = math.Sqrt(math.Pow(35, 2) - math.Pow(sv.size, 2))
 		// sv + nv = arm_vector
 		// nv dot sv = 0 ( orthogonal / 90° angle)
 		support_vec := mgl64.Vec2{sv.x, sv.y}
-		normal_vec := mgl64.Vec2{-1 / sv.x * nv, 1 / sv.y} // Here will a singularity occur.
-
+		normal_vec := mgl64.Vec2{-1 / sv.x * nv, 1 / sv.y * nv} // Here will a singularity occur.
+		fmt.Print(normal_vec)
 		// The option with greater y coordinate is choosen to reduce mechanical stress
 		first_arm_vec := support_vec.Add(normal_vec)
 
