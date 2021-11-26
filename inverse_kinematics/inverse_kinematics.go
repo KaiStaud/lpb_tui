@@ -73,12 +73,19 @@ func CalculateVectors(x float64, y float64, z float64) error {
 
 		// Calculate the coordinates of the normal vector:
 		// The normal vector is located at legth/2,
-		nv = math.Sqrt(math.Pow(35, 2) - math.Pow(sv.size, 2))
+		nv = math.Sqrt(math.Pow(35, 2) - math.Pow(sv.size, 2)) // Size of normal vector
+
+		/*
+			The normal vector creates two singularities.
+			The normal vector is located above the support vector,
+			thus nv is multiplicated with -1.
+		*/
+		normal_vec := mgl64.Vec2{(-1) * sv.y * nv / sv.size, (-1) * (-1) * sv.x * nv / sv.size}
+
 		// sv + nv = arm_vector
 		// nv dot sv = 0 ( orthogonal / 90° angle)
 		support_vec := mgl64.Vec2{sv.x, sv.y}
-		normal_vec := mgl64.Vec2{-1 / sv.x * nv, 1 / sv.y * nv} // Here will a singularity occur.
-		fmt.Print(normal_vec)
+
 		// The option with greater y coordinate is choosen to reduce mechanical stress
 		first_arm_vec := support_vec.Add(normal_vec)
 
