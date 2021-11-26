@@ -19,15 +19,8 @@ import (
 	"fmt"
 	"log"
 	"lpb/cmd"
-
-	_ "github.com/go-sql-driver/mysql"
+	"lpb/storage"
 )
-
-type coordinates struct {
-	X int
-	Y int
-	Z int
-}
 
 func main() {
 	cmd.Execute()
@@ -38,4 +31,6 @@ func main() {
 		log.Fatal("error while looading config")
 	}
 	fmt.Println("Struct:", config)
+
+	storage.Init()
 }
