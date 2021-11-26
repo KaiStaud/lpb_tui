@@ -6,7 +6,6 @@ package inverse_kinematics
 
 import (
 	"errors"
-	"fmt"
 	"math"
 
 	"github.com/go-gl/mathgl/mgl64"
@@ -14,18 +13,19 @@ import (
 
 //  Slice contains absolute length of vectors
 var number_of_arms int
-var range_of_motion float64
+var ROM range_of_motion
 
 /*
-Initialize the slice with vector lengths.
-The slice will be used to calculate the resulting
-vectors for each arm
+Initializes Inverse Kinematics constraints.
+Parameters are length of a single arm ( expected equal size among all arms),
+Minimum reachable z-height of IK-Chain (available after setup) and the number
+of attached arms in the IK Chain.
 */
-func InitVectors(length int, num_subvectors int) {
-
-	// Write value into slice:
-
+func Init(length float64, ROM_min float64, num_subvectors int) {
 	// Calculate the maximum range of motion (ROM)
+	ROM.max = length * float64(num_subvectors)
+	// Set the minimum ROM
+	ROM.min = ROM_min
 
 }
 
@@ -35,6 +35,11 @@ type support_vector struct {
 	z     float64
 	size  float64
 	angle float64
+}
+
+type range_of_motion struct {
+	min float64
+	max float64
 }
 
 /*
@@ -52,10 +57,9 @@ func CalculateVectors(x float64, y float64, z float64) (mgl64.Vec2, error) {
 	// the sum of all lengths stored in the slice vector_size!
 	length := math.Sqrt(math.Pow(x, 2) + math.Pow(y, 2))
 
-	range_of_motion = 70
-
-	if length > range_of_motion {
-		fmt.Printf("Not in Range: length = %f > 70", length)
+	if length < ROM.min {
+		return mgl64.Vec2{x, y}, errors.New("Passed vector's size to small!")
+	} else if length > ROM.max {
 		return mgl64.Vec2{x, y}, errors.New("Passed vector's size to large!")
 	} else {
 

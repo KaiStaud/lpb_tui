@@ -25,6 +25,7 @@ func TestInverseKinematics(t *testing.T) {
 		{"Vector out of ROM", 60, 40, 0},
 	}
 
+	Init(35, 2, 2)
 	for _, testCase := range testCases {
 		t.Run(testCase.description, func(t *testing.T) {
 			vec, err := CalculateVectors(testCase.input_x, testCase.input_y, testCase.input_z)
@@ -32,7 +33,7 @@ func TestInverseKinematics(t *testing.T) {
 			if err != nil {
 				if err.Error() == "Passed vector's size to large!" {
 					t.Log("Found incorrect vector!")
-				} else {
+				} else if err.Error() == "Passed vector's size too small!" {
 					t.Fatalf("Failed test with error %v", err)
 				}
 			} else {
