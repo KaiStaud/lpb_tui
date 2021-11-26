@@ -40,5 +40,5 @@ func main() {
 	}
 	fmt.Println("Struct:", config)
 
-	inverse_kinematics.CalculateVectors(40, 40, 0)
+	inverse_kinematics.CalculateVectors(60, 40, 0)
 }

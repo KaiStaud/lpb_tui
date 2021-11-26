@@ -22,6 +22,7 @@ func TestInverseKinematics(t *testing.T) {
 		{"45° Orientation,", 40, 40, 0},
 		{"45° Orientation,Case 2,", 30, 30, 0},
 		{"Unit Vector", 0, 0, 0},
+		{"Vector out of ROM", 60, 40, 0},
 	}
 
 	for _, testCase := range testCases {
@@ -29,7 +30,7 @@ func TestInverseKinematics(t *testing.T) {
 			vec, err := CalculateVectors(testCase.input_x, testCase.input_y, testCase.input_z)
 
 			if err != nil {
-				if err.Error() != "Passed vector's size to large!" {
+				if err.Error() == "Passed vector's size to large!" {
 					t.Log("Found incorrect vector!")
 				} else {
 					t.Fatalf("Failed test with error %v", err)
