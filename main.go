@@ -19,7 +19,6 @@ import (
 	"fmt"
 	"log"
 	"lpb/cmd"
-	"lpb/inverse_kinematics"
 
 	_ "github.com/go-sql-driver/mysql"
 )
@@ -39,6 +38,4 @@ func main() {
 		log.Fatal("error while looading config")
 	}
 	fmt.Println("Struct:", config)
-
-	inverse_kinematics.CalculateVectors(60, 40, 0)
 }
