@@ -42,7 +42,7 @@ Calculate the resulting vector of each arm.
 After adding all vectors together, the resulting vector
 equals the passed one.
 */
-func CalculateVectors(x float64, y float64, z float64) error {
+func CalculateVectors(x float64, y float64, z float64) (mgl64.Vec2, error) {
 
 	var sv support_vector
 	var nv float64 // Normal vectors size
@@ -56,7 +56,7 @@ func CalculateVectors(x float64, y float64, z float64) error {
 
 	if length > range_of_motion {
 		fmt.Printf("Not in Range: length = %f > 70", length)
-		return errors.New("Passed vector's size to large!")
+		return mgl64.Vec2{x, y}, errors.New("Passed vector's size to large!")
 	} else {
 
 		// Calculate the two vectors of the arms
@@ -99,9 +99,9 @@ func CalculateVectors(x float64, y float64, z float64) error {
 		// Check if calculations are correct by adding the two found vectors together.
 		// If the inverse_kinematics are correct, the sum should equal the passed destination vector
 		if destination_vec.ApproxEqual(first_arm_vec.Add(second_arm_vec)) {
-			return nil
+			return first_arm_vec.Add(second_arm_vec), nil
 		} else {
-			return errors.New("Inverse Kinematics returned incorrect vectors!")
+			return first_arm_vec.Add(second_arm_vec), errors.New("Inverse Kinematics returned incorrect vectors!")
 		}
 	}
 }
