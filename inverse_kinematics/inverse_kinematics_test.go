@@ -26,6 +26,7 @@ func TestInverseKinematics(t *testing.T) {
 	}
 
 	Init(35, 2, 2)
+
 	for _, testCase := range testCases {
 		t.Run(testCase.description, func(t *testing.T) {
 			vec, err := CalculateVectors(testCase.input_x, testCase.input_y, testCase.input_z)
