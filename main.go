@@ -16,21 +16,21 @@ limitations under the License.
 package main
 
 import (
-	"fmt"
-	"log"
 	"lpb/cmd"
 	"lpb/storage"
+	tui "lpb/textinterface"
 )
 
 func main() {
 	cmd.Execute()
-	//fmt.Println(viper.Get("name"))
-	config, err := cmd.LoadConfig()
+	/*
+		config, err := cmd.LoadConfig()
 
-	if err != nil {
-		log.Fatal("error while looading config")
-	}
-	fmt.Println("Struct:", config)
-
+		if err != nil {
+			log.Fatal("error while looading config")
+		}
+			fmt.Println("Struct:", config)
+	*/
 	storage.Init()
+	tui.Launch()
 }

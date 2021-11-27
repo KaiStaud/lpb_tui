@@ -14,9 +14,9 @@ import (
 type Coordinates struct {
 	gorm.Model
 	Name string
-	X    int
-	Y    int
-	Z    int
+	X    float64
+	Y    float64
+	Z    float64
 }
 
 type Configuration struct {
@@ -29,6 +29,8 @@ type Constraints struct {
 	gorm.Model
 	ROM_min float64
 }
+
+var db *gorm.DB
 
 func Init() {
 	db, err := gorm.Open(sqlite.Open("profiles.db"), &gorm.Config{})
@@ -45,6 +47,16 @@ func Init() {
 	db.Create(&Configuration{size: 35, position: 2})
 	db.Create(&Constraints{ROM_min: 2})
 	// Read
+
+}
+
+func Add(name string, x float64, y float64, z float64) error {
+	db.Create(&Coordinates{Name: name, X: x, Y: y})
+	return nil
+}
+
+func Get(id int) (Coordinates, error) {
 	var product Coordinates
 	db.First(&product, 1) // find product with integer primary key
+	return product, nil
 }

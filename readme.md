@@ -16,7 +16,4 @@ Before installing lpb on your device fetch the following dependencies with go-ge
 - MathGL (https://github.com/go-gl/mathgl)
 - GORM (https://gorm.io/gorm)
 - SQLite(https://gorm.io/driver/sqlite)
-
-## MYSQL Setup
-After installing mysql may dont allowing access to DB with root.
-This can be fixed by login into mysql (mysql -u root) and changing the default password(ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY 'newpw';)
+- Bubbletea (https://github.com/charmbracelet/bubbletea)
