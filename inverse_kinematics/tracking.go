@@ -37,7 +37,7 @@ func Initialize(x float64, y float64, z float64) error  {
 */
 func NewTrackingTarget(tv mgl64.Vec3)(){
 
-	// Create four planes, which envelope the vector:
+	// Create six planes, which envelope the vector:
 
 		// Calculate the necessary vectors:
 		
@@ -46,9 +46,22 @@ func NewTrackingTarget(tv mgl64.Vec3)(){
 		ty = mgl64.Vec3{0,y,0}
 		tz = mgl64.Vec3{0,0,z}
 
+		// Create new vectors around target vector
 		xv = tv.Add(tx)
 		yv = tv.Add(ty)
 		zv = tv.Add(tz)
+
+		// Span the individual planes around the target vector:
+		// P = tv + r * (tv - xv) *  s * (tv - yv) -> XY Plane
+		
+		// P = tv + r * (tv - xv) *  s * (tv - zv) -> XZ Plane
+
+		// P = tv + r * (tv - yv) *  s * (tv - zv) -> YZ Plane
+
+
+		// Mirror the three planes around tv:
+
+
 
 	//	
 
