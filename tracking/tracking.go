@@ -26,6 +26,7 @@ var (
 
 	// Waypoints of profile:
 	waypoints []mgl64.Vec2
+	index     int
 )
 
 /*
@@ -43,6 +44,7 @@ func StartNewSeries(series []mgl64.Vec2, len int) error {
 
 	waypoints = series
 	progress = 0
+	index = 0
 	increment = float64(100 / len)
 	return nil
 }
@@ -72,11 +74,18 @@ func IsTargetReached(radius float64, vec mgl64.Vec2, dest mgl64.Vec2) bool {
  */
 func CalculateMovementProgress(vec mgl64.Vec2) (progress_percent float64, err error) {
 
-	// Check if trackpoint is reached
-	if IsTargetReached(R, vec, waypoints[0]) {
-		progress = progress + increment
-		return progress, nil
+	// Check if there are remaining waypoints
+	if index < len(waypoints) {
+		// Check if trackpoint is reached
+		if IsTargetReached(R, vec, waypoints[index]) {
+			progress = progress + increment
+			index++
+			return progress, nil
+		} else {
+			return progress, errors.New("Waypoint not reached!")
+		}
 	} else {
-		return progress, errors.New("Waypoint not reached!")
+		return progress, nil
 	}
+
 }
