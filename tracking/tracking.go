@@ -15,6 +15,10 @@ import (
 	"github.com/go-gl/mathgl/mgl64"
 )
 
+//----------------------- Constansts ----------------------- //
+
+//----------------------- Variables ----------------------- //
+
 var (
 	// Dimensions of sphere
 	R float64
@@ -28,6 +32,13 @@ var (
 	waypoints []mgl64.Vec2
 	index     int
 )
+
+//----------------------- Functions ----------------------- //
+
+/* Receive Progress-Information from tracking module */
+func PushProgress(progress float64) {
+
+}
 
 /*
 * Initializes size of checkbox and resets logic to known state

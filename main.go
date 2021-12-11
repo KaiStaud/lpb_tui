@@ -18,6 +18,7 @@ package main
 import (
 	"lpb/cmd"
 	"lpb/storage"
+	tui "lpb/textinterface"
 )
 
 func main() {

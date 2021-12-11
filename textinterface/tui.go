@@ -9,10 +9,15 @@ package tui
 
 import (
 	"fmt"
-	"os"
+	"lpb/progressbar"
 
 	tea "github.com/charmbracelet/bubbletea"
 )
+
+//----------------------- Constansts ----------------------- //
+const subviews = 4
+
+//----------------------- Variables ----------------------- //
 
 // The model stores the current state of the tui.
 type model struct {
@@ -25,7 +30,7 @@ type model struct {
 func initialModel() model {
 	return model{
 		// Operational modes:
-		choices: []string{"Configuration", "Teaching", "Shutdown", "Running"},
+		choices: []string{"Configuration", "Teaching", "Shutdown", "Running", "Test"},
 
 		// A map which indicates which choices are selected. We're using
 		// the  map like a mathematical set. The keys refer to the indexes
@@ -73,7 +78,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			} else {
 
 				// Unselect  all previously selected items:
-				for i := 0; i <= 3; i++ {
+				for i := 0; i <= subviews; i++ {
 					delete(m.selected, i)
 				}
 				// Select the item, where the cursor is pointing at
@@ -115,9 +120,12 @@ func (m model) View() string {
 }
 
 func Launch() {
-	p := tea.NewProgram(initialModel())
-	if err := p.Start(); err != nil {
-		fmt.Printf("terminal ui failed with error: %v", err)
-		os.Exit(1)
-	}
+	//p := tea.NewProgram(initialModel())
+	progressbar.Initialize()
+	/*
+		if err := p.Start(); err != nil {
+			fmt.Printf("terminal ui failed with error: %v", err)
+			os.Exit(1)
+		}
+	*/
 }

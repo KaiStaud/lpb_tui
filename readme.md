@@ -17,3 +17,4 @@ Before installing lpb on your device fetch the following dependencies with go-ge
 - GORM (https://gorm.io/gorm)
 - SQLite(https://gorm.io/driver/sqlite)
 - Bubbletea (https://github.com/charmbracelet/bubbletea)
+- Bubbles (https://github.com/charmbracelet/bubbles)
