@@ -84,11 +84,11 @@ type test_replies interface {
 * Enable loopback test with values from config.yaml
 * Set enable_loopback to false if loopback is not desired
  */
-func loopback_testing(enable_loopback bool, path string, name string) error {
+func SetConfig(path string, name string) error {
 
 	if _, err := os.Stat(path); err == nil {
 
-		return load_from_yaml(path, name)
+		return LoadFromYAML(path, name)
 	} else if errors.Is(err, os.ErrNotExist) {
 		return errors.New("No Config file found!")
 	} else {
@@ -99,7 +99,7 @@ func loopback_testing(enable_loopback bool, path string, name string) error {
 /*
 * Load passed test configuration
  */
-func load_from_yaml(path string, name string) error {
+func LoadFromYAML(path string, name string) error {
 	viper.SetConfigName(name)
 	viper.AddConfigPath(path)
 

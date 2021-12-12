@@ -1,19 +1,13 @@
 package main
 
 import (
+	"lpb/optest"
 	"lpb/storage"
 	tui "lpb/textinterface"
 )
 
 func main() {
-	/*
-		config, err := cmd.LoadConfig()
-
-		if err != nil {
-			log.Fatal("error while looading config")
-		}
-			fmt.Println("Struct:", config)
-	*/
+	optest.SetConfig("~/lpb", "config")
 	storage.Init()
 	tui.Launch()
 }
