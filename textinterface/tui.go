@@ -9,13 +9,10 @@ package tui
 
 import (
 	"fmt"
-	"math"
 	"strconv"
-	"strings"
 	"time"
 
 	tea "github.com/charmbracelet/bubbletea"
-	"github.com/lucasb-eyer/go-colorful"
 	"github.com/muesli/reflow/indent"
 	"github.com/muesli/termenv"
 )
@@ -24,6 +21,9 @@ const (
 	progressBarWidth  = 71
 	progressFullChar  = "█"
 	progressEmptyChar = "░"
+
+	menue_options = 4
+	max_choices   = 4
 )
 
 // General stuff for styling the view
@@ -39,7 +39,7 @@ var (
 )
 
 func Launch() {
-	initialModel := model{0, false, 10, 0, 0, false, false}
+	initialModel := model{0, false, 0, false, 10, 0, 0, false, false}
 	p := tea.NewProgram(initialModel)
 	if err := p.Start(); err != nil {
 		fmt.Println("could not start program:", err)
@@ -61,19 +61,11 @@ func frame() tea.Cmd {
 	})
 }
 
-type model struct {
-	Choice   int
-	Chosen   bool
-	Ticks    int
-	Frames   int
-	Progress float64
-	Loaded   bool
-	Quitting bool
-}
-
 func (m model) Init() tea.Cmd {
 	return tick()
 }
+
+// The ELM Execution Cycle consists of a Update-Function followed by a View-Function
 
 // Main update function.
 func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
@@ -85,34 +77,80 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			return m, tea.Quit
 		}
 	}
-
-	// Hand off the message and model to the appropriate update function for the
-	// appropriate view based on the current state.
-	if !m.Chosen {
-		return updateChoices(msg, m)
-	}
-	return updateChosen(msg, m)
+	// Which View needs to be changed?
+	return updateHandler(msg, m)
 }
 
-// The main view, which just calls the appropriate sub-view
+/* View is preformed after Update to display the changes
+Due to complexity View itself is spit up into seperate subviews, which are executed when selected
+by their hierarchialy superior topview.
+*/
 func (m model) View() string {
-	var s string
-
-	if !m.Chosen {
-		s = choicesView(m)
-	} else {
-		s = chosenView(m)
-	}
+	s := viewHandler(m)
 	return indent.String("\n"+s+"\n\n", 2)
 }
 
+// Sub-View functions
+func viewHandler(m model) string {
+	if m.OptionChosen {
+		return choicesView(m)
+	} else {
+		return terminalOptions(m)
+	}
+}
+
 // Sub-update functions
+func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	switch msg := msg.(type) {
+
+	case tea.KeyMsg:
+
+		// User already ticked a  checkbox, we are no longer in top-menue
+		if m.OptionChosen {
+			switch msg.String() {
+			case "j", "down":
+				if m.Choice < max_choices {
+					m.Choice += 1
+				}
+			case "k", "up":
+				if m.Choice > 0 {
+					m.Choice -= 1
+				}
+			case "enter":
+				m.Chosen = true
+			}
+			// Still in top menue:
+		} else {
+			switch msg.String() {
+			case "j", "down":
+				// Catch out-of-range:
+				if m.Option < menue_options {
+					m.Option += 1
+				}
+			case "k", "up":
+				// Catch out-of-range:
+				if m.Option > 0 {
+					m.Option -= 1
+				}
+			case "enter":
+				m.OptionChosen = true
+			}
+		}
+		return m, frame()
+
+	case tickMsg:
+		m.Ticks += 1
+		return m, tick()
+	}
+	return m, nil
+}
 
 // Update loop for the first view where you're choosing a task.
 func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 
 	case tea.KeyMsg:
+
 		switch msg.String() {
 		case "j", "down":
 			m.Choice += 1
@@ -126,6 +164,7 @@ func updateChoices(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 			}
 		case "enter":
 			m.Chosen = true
+			m.Option = 1
 			return m, frame()
 		}
 
@@ -174,7 +213,7 @@ func choicesView(m model) string {
 	tpl := "Select Mode\n\n"
 	tpl += "%s\n\n"
 	tpl += "Up-Time in %s seconds\n\n"
-	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("q, esc: quit")
+	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("esc: leave menue") + subtle("q: quit")
 
 	choices := fmt.Sprintf(
 		"%s\n%s\n%s\n%s",
@@ -205,73 +244,4 @@ func chosenView(m model) string {
 	label := "Requesting OpChange..."
 
 	return msg + "\n\n" + label + "\n" + progressbar(80, m.Progress) + "%"
-}
-
-func checkbox(label string, checked bool) string {
-	if checked {
-		return colorFg("[x] "+label, "212")
-	}
-	return fmt.Sprintf("[ ] %s", label)
-}
-
-func progressbar(width int, percent float64) string {
-	w := float64(progressBarWidth)
-
-	fullSize := int(math.Round(w * percent))
-	var fullCells string
-	for i := 0; i < fullSize; i++ {
-		fullCells += termenv.String(progressFullChar).Foreground(term.Color(ramp[i])).String()
-	}
-
-	emptySize := int(w) - fullSize
-	emptyCells := strings.Repeat(progressEmpty, emptySize)
-
-	return fmt.Sprintf("%s%s %3.0f", fullCells, emptyCells, math.Round(percent*100))
-}
-
-// Utils
-
-// Color a string's foreground with the given value.
-func colorFg(val, color string) string {
-	return termenv.String(val).Foreground(term.Color(color)).String()
-}
-
-// Return a function that will colorize the foreground of a given string.
-func makeFgStyle(color string) func(string) string {
-	return termenv.Style{}.Foreground(term.Color(color)).Styled
-}
-
-// Color a string's foreground and background with the given value.
-func makeFgBgStyle(fg, bg string) func(string) string {
-	return termenv.Style{}.
-		Foreground(term.Color(fg)).
-		Background(term.Color(bg)).
-		Styled
-}
-
-// Generate a blend of colors.
-func makeRamp(colorA, colorB string, steps float64) (s []string) {
-	cA, _ := colorful.Hex(colorA)
-	cB, _ := colorful.Hex(colorB)
-
-	for i := 0.0; i < steps; i++ {
-		c := cA.BlendLuv(cB, i/steps)
-		s = append(s, colorToHex(c))
-	}
-	return
-}
-
-// Convert a colorful.Color to a hexadecimal format compatible with termenv.
-func colorToHex(c colorful.Color) string {
-	return fmt.Sprintf("#%s%s%s", colorFloatToHex(c.R), colorFloatToHex(c.G), colorFloatToHex(c.B))
-}
-
-// Helper function for converting colors to hex. Assumes a value between 0 and
-// 1.
-func colorFloatToHex(f float64) (s string) {
-	s = strconv.FormatInt(int64(f*255), 16)
-	if len(s) == 1 {
-		s = "0" + s
-	}
-	return
 }
