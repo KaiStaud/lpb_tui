@@ -41,32 +41,48 @@ var (
 
 	// Gradient colors we'll use for the progress bar
 	ramp = makeRamp("#B14FFF", "#00FFA3", progressBarWidth)
+
+	defaultWidth = 20
+	defaultHight = 14
 )
 
 func Launch() {
 
-	// Get all stored profiles. After Reset, only "Test","Shutdown" and "Home" are available
 	items := []list.Item{
-		item("Test"),
-		item("Shutdown"),
-		item("Home"),
+		item{title: "Raspberry Pi’s", desc: "I have ’em all over my house"},
+		item{title: "Nutella", desc: "It's good on toast"},
+		item{title: "Bitter melon", desc: "It cools you down"},
+		item{title: "Nice socks", desc: "And by that I mean socks without holes"},
+		item{title: "Eight hours of sleep", desc: "I had this once"},
+		item{title: "Cats", desc: "Usually"},
+		item{title: "Plantasia, the album", desc: "My plants love it too"},
+		item{title: "Pour over coffee", desc: "It takes forever to make though"},
+		item{title: "VR", desc: "Virtual reality...what is there to say?"},
+		item{title: "Noguchi Lamps", desc: "Such pleasing organic forms"},
+		item{title: "Linux", desc: "Pretty much the best OS"},
+		item{title: "Business school", desc: "Just kidding"},
+		item{title: "Pottery", desc: "Wet clay is a great feeling"},
+		item{title: "Shampoo", desc: "Nothing like clean hair"},
+		item{title: "Table tennis", desc: "It’s surprisingly exhausting"},
+		item{title: "Milk crates", desc: "Great for packing in your extra stuff"},
+		item{title: "Afternoon tea", desc: "Especially the tea sandwich part"},
+		item{title: "Stickers", desc: "The thicker the vinyl the better"},
+		item{title: "20° Weather", desc: "Celsius, not Fahrenheit"},
+		item{title: "Warm light", desc: "Like around 2700 Kelvin"},
+		item{title: "The vernal equinox", desc: "The autumnal equinox is pretty good too"},
+		item{title: "Gaffer’s tape", desc: "Basically sticky fabric"},
+		item{title: "Terrycloth", desc: "In other words, towel fabric"},
 	}
 
-	const defaultWidth = 20
-
-	l := list.NewModel(items, itemDelegate{}, defaultWidth, listHeight)
-	l.Title = "What do you want for dinner?"
-	l.SetShowStatusBar(false)
-	l.SetFilteringEnabled(false)
-	l.Styles.Title = titleStyle
-	l.Styles.PaginationStyle = paginationStyle
-	l.Styles.HelpStyle = helpStyle
-
-	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, l, nil, ""}
+	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, list.NewModel(items, list.NewDefaultDelegate(), defaultWidth, defaultHight), nil, ""}
+	initialModel.list.Title = "My Fave Things"
 	p := tea.NewProgram(initialModel)
+	p.EnterAltScreen()
+
 	if err := p.Start(); err != nil {
 		fmt.Println("could not start program:", err)
 	}
+
 }
 
 type tickMsg struct{}
