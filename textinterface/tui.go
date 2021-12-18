@@ -45,17 +45,11 @@ var (
 
 func Launch() {
 
+	// Get all stored profiles. After Reset, only "Test","Shutdown" and "Home" are available
 	items := []list.Item{
-		item("Ramen"),
-		item("Tomato Soup"),
-		item("Hamburgers"),
-		item("Cheeseburgers"),
-		item("Currywurst"),
-		item("Okonomiyaki"),
-		item("Pasta"),
-		item("Fillet Mignon"),
-		item("Caviar"),
-		item("Just Wine"),
+		item("Test"),
+		item("Shutdown"),
+		item("Home"),
 	}
 
 	const defaultWidth = 20
