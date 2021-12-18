@@ -75,7 +75,7 @@ func choicesView(m model) string {
 	tpl := "Select Mode\n\n"
 	tpl += "%s\n\n"
 	tpl += "Up-Time in %s seconds\n\n"
-	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("esc: leave menue") + subtle("q: quit")
+	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("esc: leave menue") + dot + subtle("q: quit")
 
 	choices := fmt.Sprintf(
 		"%s\n%s\n%s\n%s",

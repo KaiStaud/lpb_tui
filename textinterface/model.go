@@ -1,5 +1,7 @@
 package tui
 
+import "github.com/charmbracelet/bubbles/list"
+
 /*
 * Export the shared model from tui.go to this file.
 * Therefore its easier to find models members
@@ -14,4 +16,8 @@ type model struct {
 	Progress     float64
 	Loaded       bool
 	Quitting     bool
+
+	list        list.Model
+	list_items  []item
+	list_choice string
 }

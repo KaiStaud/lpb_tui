@@ -10,6 +10,7 @@ require (
 )
 
 require (
+	github.com/atotto/clipboard v0.1.2 // indirect
 	github.com/charmbracelet/bubbles v0.9.0 // indirect
 	github.com/charmbracelet/bubbletea v0.19.1 // indirect
 	github.com/charmbracelet/harmonica v0.1.0 // indirect
@@ -34,10 +35,12 @@ require (
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
+	github.com/sahilm/fuzzy v0.1.0 // indirect
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
+	github.com/ssimunic/gosensors v0.0.0-20170414000417-e7ab9a4e799b // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b // indirect
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect

@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"time"
 
+	"github.com/charmbracelet/bubbles/list"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/muesli/reflow/indent"
 	"github.com/muesli/termenv"
@@ -23,6 +24,11 @@ const (
 
 	menue_options = 4
 	max_choices   = 4
+
+	profile_editor = 1
+	run_options    = 2
+	test_results   = 3
+	shutdown       = 4
 )
 
 // General stuff for styling the view
@@ -38,7 +44,31 @@ var (
 )
 
 func Launch() {
-	initialModel := model{0, false, 0, false, 10, 0, 0, false, false}
+
+	items := []list.Item{
+		item("Ramen"),
+		item("Tomato Soup"),
+		item("Hamburgers"),
+		item("Cheeseburgers"),
+		item("Currywurst"),
+		item("Okonomiyaki"),
+		item("Pasta"),
+		item("Fillet Mignon"),
+		item("Caviar"),
+		item("Just Wine"),
+	}
+
+	const defaultWidth = 20
+
+	l := list.NewModel(items, itemDelegate{}, defaultWidth, listHeight)
+	l.Title = "What do you want for dinner?"
+	l.SetShowStatusBar(false)
+	l.SetFilteringEnabled(false)
+	l.Styles.Title = titleStyle
+	l.Styles.PaginationStyle = paginationStyle
+	l.Styles.HelpStyle = helpStyle
+
+	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, l, nil, ""}
 	p := tea.NewProgram(initialModel)
 	if err := p.Start(); err != nil {
 		fmt.Println("could not start program:", err)
@@ -71,9 +101,13 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// Make sure these keys always quit
 	if msg, ok := msg.(tea.KeyMsg); ok {
 		k := msg.String()
-		if k == "q" || k == "esc" || k == "ctrl+c" {
+		if k == "q" || k == "ctrl+c" {
 			m.Quitting = true
 			return m, tea.Quit
+		}
+		if k == "esc" {
+			m.OptionChosen = false
+			m.Option = 0
 		}
 	}
 	// Handle Selections  and Animations differently:
@@ -98,14 +132,22 @@ func (m model) View() string {
 
 // Sub-View functions
 func viewHandler(m model) string {
+	// Are there any changes in any level?
 
 	// Are there any changes in any level?
 	if m.OptionChosen {
-		if m.Chosen {
-			return chosenView(m)
+		if m.Option == 1 {
+			if m.Chosen {
+				return chosenView(m)
+			} else {
+				return choicesView(m)
+			}
+		} else if m.Option == 0 {
+			return m.ViewList()
 		} else {
-			return choicesView(m)
+			return terminalOptions(m)
 		}
+
 	} else {
 		return terminalOptions(m)
 	}
@@ -119,17 +161,21 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 
 		// User already ticked a  checkbox, we are no longer in top-menue
 		if m.OptionChosen {
-			switch msg.String() {
-			case "j", "down":
-				if m.Choice < max_choices {
-					m.Choice += 1
+			if m.Option != 0 {
+				switch msg.String() {
+				case "j", "down":
+					if m.Choice < max_choices {
+						m.Choice += 1
+					}
+				case "k", "up":
+					if m.Choice > 0 {
+						m.Choice -= 1
+					}
+				case "enter":
+					m.Chosen = true
 				}
-			case "k", "up":
-				if m.Choice > 0 {
-					m.Choice -= 1
-				}
-			case "enter":
-				m.Chosen = true
+			} else {
+				return m.UpdateList(msg)
 			}
 			// Still in top menue:
 		} else {
@@ -149,10 +195,6 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 			}
 		}
 		return m, frame()
-
-	case tickMsg:
-		m.Ticks += 1
-		return m, tick()
 	}
 
 	// Execute Animations after a selection:
