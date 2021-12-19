@@ -49,29 +49,9 @@ var (
 func Launch() {
 
 	items := []list.Item{
-		item{title: "Raspberry Pi’s", desc: "I have ’em all over my house"},
-		item{title: "Nutella", desc: "It's good on toast"},
-		item{title: "Bitter melon", desc: "It cools you down"},
-		item{title: "Nice socks", desc: "And by that I mean socks without holes"},
-		item{title: "Eight hours of sleep", desc: "I had this once"},
-		item{title: "Cats", desc: "Usually"},
-		item{title: "Plantasia, the album", desc: "My plants love it too"},
-		item{title: "Pour over coffee", desc: "It takes forever to make though"},
-		item{title: "VR", desc: "Virtual reality...what is there to say?"},
-		item{title: "Noguchi Lamps", desc: "Such pleasing organic forms"},
-		item{title: "Linux", desc: "Pretty much the best OS"},
-		item{title: "Business school", desc: "Just kidding"},
-		item{title: "Pottery", desc: "Wet clay is a great feeling"},
-		item{title: "Shampoo", desc: "Nothing like clean hair"},
-		item{title: "Table tennis", desc: "It’s surprisingly exhausting"},
-		item{title: "Milk crates", desc: "Great for packing in your extra stuff"},
-		item{title: "Afternoon tea", desc: "Especially the tea sandwich part"},
-		item{title: "Stickers", desc: "The thicker the vinyl the better"},
-		item{title: "20° Weather", desc: "Celsius, not Fahrenheit"},
-		item{title: "Warm light", desc: "Like around 2700 Kelvin"},
-		item{title: "The vernal equinox", desc: "The autumnal equinox is pretty good too"},
-		item{title: "Gaffer’s tape", desc: "Basically sticky fabric"},
-		item{title: "Terrycloth", desc: "In other words, towel fabric"},
+		item{title: "Home", desc: "Home the robot"},
+		item{title: "Shutdown", desc: "Poweroff System"},
+		item{title: "Demo", desc: "Perform Demo"},
 	}
 
 	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, list.NewModel(items, list.NewDefaultDelegate(), defaultWidth, defaultHight), nil, ""}
@@ -143,8 +123,6 @@ func (m model) View() string {
 // Sub-View functions
 func viewHandler(m model) string {
 	// Are there any changes in any level?
-
-	// Are there any changes in any level?
 	if m.OptionChosen {
 		if m.Option == 1 {
 			if m.Chosen {
@@ -165,13 +143,29 @@ func viewHandler(m model) string {
 
 // Sub-update functions
 func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+
+	// Lists keymappings are handeled seperately:
+	if m.OptionChosen {
+		switch m.Option {
+		case 0:
+			var cmd tea.Cmd
+			m.list, cmd = m.list.Update(msg)
+			return m, cmd
+
+		default:
+		}
+	}
+
+	// All other events are generated on keypresses.
+	// Check if which hierarchy they happened and update model:
 	switch msg := msg.(type) {
 
+	// Parse keyboard inputs:
 	case tea.KeyMsg:
 
 		// User already ticked a  checkbox, we are no longer in top-menue
 		if m.OptionChosen {
-			if m.Option != 0 {
+			if m.Option != 0 { // Option 0 is mapped to Editor view!
 				switch msg.String() {
 				case "j", "down":
 					if m.Choice < max_choices {
@@ -184,10 +178,8 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 				case "enter":
 					m.Chosen = true
 				}
-			} else {
-				return m.UpdateList(msg)
 			}
-			// Still in top menue:
+			// Still in top menue, increment / decrement option
 		} else {
 			switch msg.String() {
 			case "j", "down":

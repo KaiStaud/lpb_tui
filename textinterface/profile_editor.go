@@ -24,10 +24,6 @@ func (i item) FilterValue() string { return i.title }
 
 func (m model) UpdateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
-	case tea.KeyMsg:
-		if msg.String() == "ctrl+c" {
-			return m, nil
-		}
 	case tea.WindowSizeMsg:
 		top, right, bottom, left := docStyle.GetMargin()
 		m.list.SetSize(msg.Width-left-right, msg.Height-top-bottom)
@@ -39,5 +35,5 @@ func (m model) UpdateList(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 func (m model) ViewList() string {
-	return docStyle.Render(">" + m.list.View())
+	return docStyle.Render(m.list.View())
 }
