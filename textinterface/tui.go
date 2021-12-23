@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/muesli/reflow/indent"
 	"github.com/muesli/termenv"
@@ -22,13 +23,14 @@ const (
 	progressFullChar  = "█"
 	progressEmptyChar = "░"
 
-	menue_options = 4
-	max_choices   = 4
+	menue_options = 5
+	max_choices   = 5
 
 	profile_editor = 1
 	run_options    = 2
 	test_results   = 3
 	shutdown       = 4
+	teaching       = 5
 )
 
 // General stuff for styling the view
@@ -54,7 +56,13 @@ func Launch() {
 		item{title: "Demo", desc: "Perform Demo"},
 	}
 
-	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, list.NewModel(items, list.NewDefaultDelegate(), defaultWidth, defaultHight), nil, ""}
+	ti := textinput.NewModel()
+	ti.Placeholder = "Unsaved Profile"
+	ti.Focus()
+	ti.CharLimit = 156
+	ti.Width = 20
+
+	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, list.NewModel(items, list.NewDefaultDelegate(), defaultWidth, defaultHight), nil, "", ti, nil}
 	initialModel.list.Title = "My Fave Things"
 	p := tea.NewProgram(initialModel)
 	p.EnterAltScreen()
@@ -132,6 +140,8 @@ func viewHandler(m model) string {
 			}
 		} else if m.Option == 0 {
 			return m.ViewList()
+		} else if m.Option == 4 {
+			return m.ViewProfileName()
 		} else {
 			return terminalOptions(m)
 		}
@@ -143,15 +153,17 @@ func viewHandler(m model) string {
 
 // Sub-update functions
 func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
+	var cmd tea.Cmd
 
 	// Lists keymappings are handeled seperately:
 	if m.OptionChosen {
 		switch m.Option {
 		case 0:
-			var cmd tea.Cmd
 			m.list, cmd = m.list.Update(msg)
 			return m, cmd
 
+		case 4:
+			return m.UpdateTeaching(msg)
 		default:
 		}
 	}

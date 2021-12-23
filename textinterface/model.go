@@ -1,6 +1,9 @@
 package tui
 
-import "github.com/charmbracelet/bubbles/list"
+import (
+	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/textinput"
+)
 
 /*
 * Export the shared model from tui.go to this file.
@@ -20,4 +23,7 @@ type model struct {
 	list        list.Model
 	list_items  []item
 	list_choice string
+
+	textInput textinput.Model
+	err       error
 }
