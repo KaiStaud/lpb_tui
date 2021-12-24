@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 
+	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -87,13 +88,11 @@ func (m model) UpdateProfileName(msg tea.Msg) (tea.Model, tea.Cmd) {
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
+		// After pressing the enter button, teaching is changed to " actively running"
 		case tea.KeyEnter:
 			teaching_state = teaching_running
-			// For now, just return to the top menue:
-			// Later a handshake with the hardware is necessary to return from the teaching view
-			//m.OptionChosen = false
-			//m.Option = 0
-			return m, nil //tea.Quit
+			// Restart the spinner, since it wasn't running after start ( wasn't started in teaching view,too!)
+			return m, spinner.Tick
 		}
 	}
 	m.textInput, cmd = m.textInput.Update(msg)
