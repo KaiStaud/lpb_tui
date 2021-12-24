@@ -12,8 +12,10 @@ import (
 	"time"
 
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
+	"github.com/charmbracelet/lipgloss"
 	"github.com/muesli/reflow/indent"
 	"github.com/muesli/termenv"
 )
@@ -62,9 +64,14 @@ func Launch() {
 	ti.CharLimit = 156
 	ti.Width = 20
 
-	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, list.NewModel(items, list.NewDefaultDelegate(), defaultWidth, defaultHight), nil, "", ti, nil}
+	s := spinner.NewModel()
+	s.Spinner = spinner.Dot
+	s.Style = lipgloss.NewStyle().Foreground(lipgloss.Color("205"))
+	spinner.Tick()
+
+	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, list.NewModel(items, list.NewDefaultDelegate(), defaultWidth, defaultHight), nil, "", ti, s, nil}
 	initialModel.list.Title = "My Fave Things"
-	p := tea.NewProgram(initialModel)
+	p := tea.NewProgram((initialModel))
 	p.EnterAltScreen()
 
 	if err := p.Start(); err != nil {
@@ -89,7 +96,7 @@ func frame() tea.Cmd {
 }
 
 func (m model) Init() tea.Cmd {
-	return tick()
+	return spinner.Tick
 }
 
 // The ELM Execution Cycle consists of a Update-Function followed by a View-Function
@@ -141,7 +148,7 @@ func viewHandler(m model) string {
 		} else if m.Option == 0 {
 			return m.ViewList()
 		} else if m.Option == 4 {
-			return m.ViewProfileName()
+			return m.ViewTeaching()
 		} else {
 			return terminalOptions(m)
 		}

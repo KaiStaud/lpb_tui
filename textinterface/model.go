@@ -2,6 +2,7 @@ package tui
 
 import (
 	"github.com/charmbracelet/bubbles/list"
+	"github.com/charmbracelet/bubbles/spinner"
 	"github.com/charmbracelet/bubbles/textinput"
 )
 
@@ -25,5 +26,6 @@ type model struct {
 	list_choice string
 
 	textInput textinput.Model
+	spinner   spinner.Model
 	err       error
 }

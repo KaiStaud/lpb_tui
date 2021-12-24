@@ -26,18 +26,35 @@ var (
 )
 
 /* Initialize Teaching TUI*/
+func (m model) ViewTeaching() string {
+	switch teaching_state {
+	case name_pending:
+		return m.ViewProfileName()
+	case teaching_running:
+		return m.ViewTeachingRunning()
+	//case teaching_done:
+
+	default:
+		return ""
+	}
+}
+
 func (m model) UpdateTeaching(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	switch teaching_state {
+
 	case ack_pending:
 		teaching_state = name_pending
 		return m, nil
+
 	case name_pending:
 		return m.UpdateProfileName(msg)
 
 	case teaching_running:
-		teaching_state = teaching_done
-		return m, nil
+
+		teaching_state = teaching_running
+		return m.UpdateTeachingRunning(msg)
+
 	case teaching_done:
 		//teaching_state = ack_pending
 		m.OptionChosen = false
@@ -74,8 +91,8 @@ func (m model) UpdateProfileName(msg tea.Msg) (tea.Model, tea.Cmd) {
 			teaching_state = teaching_running
 			// For now, just return to the top menue:
 			// Later a handshake with the hardware is necessary to return from the teaching view
-			m.OptionChosen = false
-			m.Option = 0
+			//m.OptionChosen = false
+			//m.Option = 0
 			return m, nil //tea.Quit
 		}
 	}
@@ -84,6 +101,17 @@ func (m model) UpdateProfileName(msg tea.Msg) (tea.Model, tea.Cmd) {
 }
 
 /* Show active teaching with spinner */
+func (m model) ViewTeachingRunning() string {
+	str := fmt.Sprintf("\n\n   %s Teaching in progress\n\n", m.spinner.View())
+	return str
+}
+
+func (m model) UpdateTeachingRunning(msg tea.Msg) (tea.Model, tea.Cmd) {
+
+	var cmd tea.Cmd
+	m.spinner, cmd = m.spinner.Update(msg)
+	return m, cmd
+}
 
 /* Show ! and error message if teaching was unexpectily quit */
 
