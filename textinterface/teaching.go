@@ -33,8 +33,8 @@ func (m model) ViewTeaching() string {
 		return m.ViewProfileName()
 	case teaching_running:
 		return m.ViewTeachingRunning()
-	//case teaching_done:
-
+	case teaching_done:
+		return m.ViewTeachingDone()
 	default:
 		return ""
 	}
@@ -57,7 +57,7 @@ func (m model) UpdateTeaching(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.UpdateTeachingRunning(msg)
 
 	case teaching_done:
-		//teaching_state = ack_pending
+		teaching_state = ack_pending
 		m.OptionChosen = false
 		m.Option = 0
 		return m, nil
@@ -108,12 +108,47 @@ func (m model) ViewTeachingRunning() string {
 func (m model) UpdateTeachingRunning(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	var cmd tea.Cmd
-	m.spinner, cmd = m.spinner.Update(msg)
-	return m, cmd
+
+	/* Was finished command entered? */
+	switch msg := msg.(type) {
+	case tea.KeyMsg:
+		switch msg.Type {
+		// Teaching is done:
+		case tea.KeyRunes:
+			if msg.String() == "f" {
+				teaching_state = teaching_done
+				return m, nil
+			} else {
+				m.spinner, cmd = m.spinner.Update(msg)
+				return m, cmd
+			}
+		// Delete Set:
+
+		// Wrong input, just update spinner:
+		default:
+			m.spinner, cmd = m.spinner.Update(msg)
+			return m, cmd
+		}
+
+	default:
+		m.spinner, cmd = m.spinner.Update(msg)
+		return m, cmd
+	}
+
+	//	var cmd tea.Cmd
+	//	m.spinner, cmd = m.spinner.Update(msg)
+	//	return m, cmd
 }
 
 /* Show ! and error message if teaching was unexpectily quit */
 
+/* Wait until user enters 'f' for finished teaching */
+//func (m model) UpdateTeachingDone(msg tea.Msg) (tea.Model, tea.Cmd) {
+//}
+
 /* Show "Teaching Done" on "f" input */
+func (m model) ViewTeachingDone() string {
+	return "Teaching finished!"
+}
 
 /* Create new entry in database */
