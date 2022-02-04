@@ -42,6 +42,9 @@ require (
 	github.com/spf13/pflag v1.0.5 // indirect
 	github.com/ssimunic/gosensors v0.0.0-20170414000417-e7ab9a4e799b // indirect
 	github.com/subosito/gotenv v1.2.0 // indirect
+	go.uber.org/atomic v1.9.0 // indirect
+	go.uber.org/multierr v1.7.0 // indirect
+	go.uber.org/zap v1.20.0 // indirect
 	golang.org/x/image v0.0.0-20190802002840-cff245a6509b // indirect
 	golang.org/x/sys v0.0.0-20210823070655-63515b42dcdf // indirect
 	golang.org/x/term v0.0.0-20210422114643-f5beecf764ed // indirect

@@ -52,15 +52,15 @@ func (m model) UpdateTeaching(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.UpdateProfileName(msg)
 
 	case teaching_running:
-
 		teaching_state = teaching_running
 		return m.UpdateTeachingRunning(msg)
 
 	case teaching_done:
+		// Expand DB Entry:
 		teaching_state = ack_pending
 		m.OptionChosen = false
 		m.Option = 0
-		return m, nil
+		return m.UpdateTeachingDone(msg)
 	default:
 		teaching_state = ack_pending
 		return m, nil
@@ -81,6 +81,9 @@ func (m model) ViewProfileName() string {
 	) + "\n"
 }
 
+/*
+* Save entered string, register keypresses for ending teaching mode
+ */
 func (m model) UpdateProfileName(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	var cmd tea.Cmd
@@ -143,12 +146,11 @@ func (m model) UpdateTeachingRunning(msg tea.Msg) (tea.Model, tea.Cmd) {
 /* Show ! and error message if teaching was unexpectily quit */
 
 /* Wait until user enters 'f' for finished teaching */
-//func (m model) UpdateTeachingDone(msg tea.Msg) (tea.Model, tea.Cmd) {
-//}
+func (m model) UpdateTeachingDone(msg tea.Msg) (tea.Model, tea.Cmd) {
+	return m, nil
+}
 
 /* Show "Teaching Done" on "f" input */
 func (m model) ViewTeachingDone() string {
 	return "Teaching finished!"
 }
-
-/* Create new entry in database */

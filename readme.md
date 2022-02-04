@@ -39,3 +39,6 @@ currently the following components are used:
 - Bubbletea (https://github.com/charmbracelet/bubbletea)
 - Bubbles (https://github.com/charmbracelet/bubbles)
 - Lipgloss (github.com/charmbracelet/lipgloss)
+
+### Tools
+- Zap (https://github.com/uber-go/zap)
