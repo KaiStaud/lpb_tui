@@ -11,5 +11,5 @@ func main() {
 	optest.SetConfig("~/lpb", "config")
 	storage.Init()
 	multilogger.Init()
-	tui.Launch()
+	//tui.Launch()
 }

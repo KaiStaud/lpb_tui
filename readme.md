@@ -41,4 +41,5 @@ currently the following components are used:
 - Lipgloss (github.com/charmbracelet/lipgloss)
 
 ### Tools
-- Zap (https://github.com/uber-go/zap)
+- zap 	(https://github.com/uber-go/zap)
+- Lumberjack
