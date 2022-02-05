@@ -57,7 +57,7 @@ func (m model) UpdateTeaching(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case teaching_done:
 		// Expand DB Entry:
-		//input := m.textInput.Value()
+		//multilogger.TuiChannel <- "pog"
 		teaching_state = ack_pending
 		m.OptionChosen = false
 		m.Option = 0

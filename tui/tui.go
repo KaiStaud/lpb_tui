@@ -48,10 +48,16 @@ var (
 
 	defaultWidth = 20
 	defaultHight = 14
+
+	//Expose the logging channel in module
+	tuiLogs chan<- string
 )
 
-func Launch() {
+// Initialize and launch textinerface
+// Connect sender channel for logging
+func Launch(logs chan<- string) {
 
+	//	tuiLogs = logs
 	items := []list.Item{
 		item{title: "Home", desc: "Home the robot"},
 		item{title: "Shutdown", desc: "Poweroff System"},

@@ -42,4 +42,4 @@ currently the following components are used:
 
 ### Tools
 - zap 	(https://github.com/uber-go/zap)
-- Lumberjack
+- Lumberjack (https://github.com/natefinch/lumberjack)

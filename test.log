@@ -1,3 +1,78 @@
 2022-02-05T17:42:45.502+0100	INFO	Info() uses sprint
 2022-02-05T17:42:45.502+0100	INFO	Infof() uses sprintf
 2022-02-05T17:42:45.502+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T18:13:27.494+0100	INFO	Info() uses sprint
+2022-02-05T18:13:27.494+0100	INFO	Infof() uses sprintf
+2022-02-05T18:13:27.494+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T18:16:55.784+0100	INFO	Info() uses sprint
+2022-02-05T18:16:55.784+0100	INFO	Infof() uses sprintf
+2022-02-05T18:16:55.784+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T18:18:25.642+0100	INFO	Info() uses sprint
+2022-02-05T18:18:25.642+0100	INFO	Infof() uses sprintf
+2022-02-05T18:18:25.642+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T18:19:21.077+0100	INFO	Info() uses sprint
+2022-02-05T18:19:21.077+0100	INFO	Infof() uses sprintf
+2022-02-05T18:19:21.077+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T20:42:37.507+0100	INFO	Info() uses sprint
+2022-02-05T20:42:37.509+0100	INFO	Infof() uses sprintf
+2022-02-05T20:42:37.509+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T20:50:08.888+0100	INFO	Info() uses sprint
+2022-02-05T20:50:08.888+0100	INFO	Infof() uses sprintf
+2022-02-05T20:50:08.888+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T20:53:17.405+0100	INFO	Info() uses sprint
+2022-02-05T20:53:17.405+0100	INFO	Infof() uses sprintf
+2022-02-05T20:53:17.405+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:00:25.583+0100	INFO	Info() uses sprint
+2022-02-05T21:00:25.583+0100	INFO	Infof() uses sprintf
+2022-02-05T21:00:25.583+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:00:45.149+0100	INFO	Info() uses sprint
+2022-02-05T21:00:45.149+0100	INFO	Infof() uses sprintf
+2022-02-05T21:00:45.149+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:04:29.539+0100	INFO	Info() uses sprint
+2022-02-05T21:04:29.539+0100	INFO	Infof() uses sprintf
+2022-02-05T21:04:29.539+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:07:19.836+0100	INFO	Info() uses sprint
+2022-02-05T21:07:19.836+0100	INFO	Infof() uses sprintf
+2022-02-05T21:07:19.836+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:07:39.870+0100	INFO	Info() uses sprint
+2022-02-05T21:07:39.870+0100	INFO	Infof() uses sprintf
+2022-02-05T21:07:39.870+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:08:00.603+0100	INFO	Info() uses sprint
+2022-02-05T21:08:00.603+0100	INFO	Infof() uses sprintf
+2022-02-05T21:08:00.603+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:08:41.726+0100	INFO	Info() uses sprint
+2022-02-05T21:08:41.726+0100	INFO	Infof() uses sprintf
+2022-02-05T21:08:41.726+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:09:11.557+0100	INFO	Info() uses sprint
+2022-02-05T21:09:11.557+0100	INFO	Infof() uses sprintf
+2022-02-05T21:09:11.557+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:09:53.246+0100	INFO	Info() uses sprint
+2022-02-05T21:09:53.246+0100	INFO	Infof() uses sprintf
+2022-02-05T21:09:53.246+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:13:21.783+0100	INFO	Info() uses sprint
+2022-02-05T21:13:21.783+0100	INFO	Infof() uses sprintf
+2022-02-05T21:13:21.783+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:40:28.176+0100	INFO	Info() uses sprint
+2022-02-05T21:40:28.177+0100	INFO	Infof() uses sprintf
+2022-02-05T21:40:28.177+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:45:37.482+0100	INFO	Info() uses sprint
+2022-02-05T21:45:37.482+0100	INFO	Infof() uses sprintf
+2022-02-05T21:45:37.483+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:46:02.248+0100	INFO	Info() uses sprint
+2022-02-05T21:46:02.248+0100	INFO	Infof() uses sprintf
+2022-02-05T21:46:02.248+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:47:12.876+0100	INFO	Info() uses sprint
+2022-02-05T21:47:12.877+0100	INFO	Infof() uses sprintf
+2022-02-05T21:47:12.877+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:49:40.004+0100	INFO	Info() uses sprint
+2022-02-05T21:49:40.005+0100	INFO	Infof() uses sprintf
+2022-02-05T21:49:40.005+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:50:25.766+0100	INFO	Info() uses sprint
+2022-02-05T21:50:25.766+0100	INFO	Infof() uses sprintf
+2022-02-05T21:50:25.766+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:51:00.053+0100	INFO	Info() uses sprint
+2022-02-05T21:51:00.054+0100	INFO	Infof() uses sprintf
+2022-02-05T21:51:00.054+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
+2022-02-05T21:52:58.565+0100	INFO	Info() uses sprint
+2022-02-05T21:52:58.565+0100	INFO	Infof() uses sprintf
+2022-02-05T21:52:58.565+0100	INFO	Infow() allows tags	{"name": "Legolas", "type": 1}
