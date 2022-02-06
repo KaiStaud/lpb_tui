@@ -9,6 +9,7 @@ package tui
 
 import (
 	"fmt"
+	"lpb/pipes"
 	"time"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -55,8 +56,8 @@ var (
 
 // Initialize and launch textinerface
 // Connect sender channel for logging
-func Launch(logs chan<- string) {
-
+func Launch() {
+	pipes.Init()
 	//	tuiLogs = logs
 	items := []list.Item{
 		item{title: "Home", desc: "Home the robot"},

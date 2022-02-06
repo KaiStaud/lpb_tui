@@ -18,8 +18,9 @@ require (
 	gorm.io/gorm v1.22.3
 )
 
+require github.com/syrinsecurity/gologger v1.2.0 // indirect
+
 require (
-	github.com/apsdehal/go-logger v0.0.0-20190515212710-b0d6ccfee0e6
 	github.com/atotto/clipboard v0.1.2 // indirect
 	github.com/containerd/console v1.0.2 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -34,9 +35,7 @@ require (
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/rivo/uniseg v0.2.0 // indirect
-	github.com/rs/zerolog v1.26.1
 	github.com/sahilm/fuzzy v0.1.0 // indirect
-	github.com/sirupsen/logrus v1.8.1
 	github.com/spf13/afero v1.6.0 // indirect
 	github.com/spf13/cast v1.4.1 // indirect
 	github.com/spf13/jwalterweatherman v1.1.0 // indirect

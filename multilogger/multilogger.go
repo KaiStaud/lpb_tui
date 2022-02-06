@@ -1,9 +1,21 @@
 package multilogger
 
 import (
-	"go.uber.org/zap"
-	"go.uber.org/zap/zapcore"
-	"gopkg.in/natefinch/lumberjack.v2"
+	"fmt"
+	"lpb/pipes"
+	"strings"
+	"time"
+
+	"github.com/syrinsecurity/gologger"
+)
+
+const (
+	Info     = iota
+	Debug    = iota
+	Warning  = iota
+	Error    = iota
+	Critical = iota
+	Panic    = iota
 )
 
 /*
@@ -12,48 +24,32 @@ Each logger is parameterized with an absolute path to its log-file.
 Logs are written via channels, execution is done seperately in a goroutine.
 */
 
-var Slogger *zap.SugaredLogger
-var tuilogs <-chan string
-
-func getLogWriter() zapcore.WriteSyncer {
-	lumberJackLogger := &lumberjack.Logger{
-		Filename:   "./test.log",
-		MaxSize:    10,
-		MaxBackups: 5,
-		MaxAge:     30,
-		Compress:   false,
-	}
-	return zapcore.AddSync(lumberJackLogger)
-}
-
-func getEncoder() zapcore.Encoder {
-	encoderConfig := zap.NewProductionEncoderConfig()
-	encoderConfig.EncodeTime = zapcore.ISO8601TimeEncoder
-	encoderConfig.EncodeLevel = zapcore.CapitalLevelEncoder
-	return zapcore.NewConsoleEncoder(encoderConfig)
-}
-
 // Initialize logging  and setup gorotine:
 // Expects channel on which logs are received
-func Init(logs <-chan string) {
+func Init() {
 
-	writeSyncer := getLogWriter()
-	encoder := getEncoder()
-	core := zapcore.NewCore(encoder, writeSyncer, zapcore.DebugLevel)
+	// Buffer messages on channel
+	pipes.DebugMessages = make(chan string, 10)
 
-	var logger = zap.New(core)
-	Slogger := logger.Sugar()
-	Slogger.Info("Info() uses sprint")
-	Slogger.Infof("Infof() uses %s", "sprintf")
-	Slogger.Infow("Infow() allows tags", "name", "Legolas", "type", 1)
-
-	go TuiLogger(logs)
+	go TuiLogger(pipes.DebugMessages)
 }
 
 // Goroutine for TUI
 func TuiLogger(logs <-chan string) {
-	msg := <-logs
-	Slogger.Info(msg)
+
+	logger, err := gologger.New("./file.log", 200)
+	if err != nil {
+		panic(err)
+	}
+
+	for {
+		msg := <-logs
+		fields := strings.Split(msg, ":")
+		logger.WriteString(fmt.Sprintf("<%d-%02d-%02d %02d:%02d:%02d> [%s] %s",
+			time.Now().Year(), time.Now().Month(), time.Now().Day(),
+			time.Now().Hour(), time.Now().Minute(), time.Now().Second(),
+			fields[0], fields[1]))
+	}
 
 }
 

@@ -41,5 +41,5 @@ currently the following components are used:
 - Lipgloss (github.com/charmbracelet/lipgloss)
 
 ### Tools
-- zap 	(https://github.com/uber-go/zap)
+- gologger (https://github.com/syrinsecurity/gologger)
 - Lumberjack (https://github.com/natefinch/lumberjack)

@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"lpb/multilogger"
 	"lpb/optest"
+	"lpb/pipes"
 	"lpb/storage"
 	"lpb/tui"
 	"time"
@@ -20,12 +21,10 @@ func pong(pings <-chan string) {
 
 func main() {
 
-	tui_logs := make(chan string)
-
 	optest.SetConfig("~/lpb", "config")
 	storage.Init()
-	multilogger.Init(tui_logs)
-	tui.Launch(tui_logs)
+	multilogger.Init()
+	tui.Launch()
 
 	// Wait for all channels to be closed
 
@@ -35,4 +34,5 @@ func main() {
 	time.Sleep(2 * time.Second)
 
 	//messages <- "ping"
+	pipes.Init()
 }

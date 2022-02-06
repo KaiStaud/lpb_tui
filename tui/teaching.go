@@ -2,6 +2,9 @@ package tui
 
 import (
 	"fmt"
+	"log"
+	"lpb/pipes"
+	"os"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -57,7 +60,20 @@ func (m model) UpdateTeaching(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	case teaching_done:
 		// Expand DB Entry:
-		//multilogger.TuiChannel <- "pog"
+		f, err := tea.LogToFile("debug.log", "debug")
+		if err != nil {
+			fmt.Println("fatal:", err)
+			os.Exit(1)
+		}
+		log.Print("debug info")
+		f, err = tea.LogToFile("debug.log", "error")
+		if err != nil {
+			fmt.Println("fatal:", err)
+			os.Exit(1)
+		}
+		log.Print("error info")
+
+		defer f.Close()
 		teaching_state = ack_pending
 		m.OptionChosen = false
 		m.Option = 0
@@ -153,5 +169,7 @@ func (m model) UpdateTeachingDone(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 /* Show "Teaching Done" on "f" input */
 func (m model) ViewTeachingDone() string {
+	pipes.DebugMessages <- fmt.Sprintf("Info:created new profile %s", m.textInput.Value())
 	return "Teaching finished!"
+
 }
