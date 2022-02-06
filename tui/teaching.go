@@ -2,9 +2,7 @@ package tui
 
 import (
 	"fmt"
-	"log"
-	"lpb/pipes"
-	"os"
+	"lpb/multilogger"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -59,21 +57,6 @@ func (m model) UpdateTeaching(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.UpdateTeachingRunning(msg)
 
 	case teaching_done:
-		// Expand DB Entry:
-		f, err := tea.LogToFile("debug.log", "debug")
-		if err != nil {
-			fmt.Println("fatal:", err)
-			os.Exit(1)
-		}
-		log.Print("debug info")
-		f, err = tea.LogToFile("debug.log", "error")
-		if err != nil {
-			fmt.Println("fatal:", err)
-			os.Exit(1)
-		}
-		log.Print("error info")
-
-		defer f.Close()
 		teaching_state = ack_pending
 		m.OptionChosen = false
 		m.Option = 0
@@ -129,16 +112,28 @@ func (m model) UpdateTeachingRunning(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 	var cmd tea.Cmd
 
-	/* Was finished command entered? */
+	/* Was a command entered? */
 	switch msg := msg.(type) {
 	case tea.KeyMsg:
 		switch msg.Type {
 		// Teaching is done:
 		case tea.KeyRunes:
+			// Save buffered dataset
 			if msg.String() == "f" {
+				dbg_info := fmt.Sprintf("Info:created new profile %s", m.textInput.Value())
+				multilogger.AddTuiLog(dbg_info)
 				teaching_state = teaching_done
 				return m, nil
+
+				// Delete buffered dataset
+			} else if msg.String() == "d" {
+				multilogger.AddTuiLog("Info:Delete teaching-set")
+				teaching_state = teaching_done
+				return m, nil
+
+				// Incorrect Input
 			} else {
+				multilogger.AddTuiLog("Info:Incorrect keypress while Teaching!")
 				m.spinner, cmd = m.spinner.Update(msg)
 				return m, cmd
 			}
@@ -169,7 +164,6 @@ func (m model) UpdateTeachingDone(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 /* Show "Teaching Done" on "f" input */
 func (m model) ViewTeachingDone() string {
-	pipes.DebugMessages <- fmt.Sprintf("Info:created new profile %s", m.textInput.Value())
 	return "Teaching finished!"
 
 }

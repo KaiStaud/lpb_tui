@@ -18,6 +18,10 @@ const (
 	Panic    = iota
 )
 
+var (
+	logger, _ = gologger.New("./file.log", 200)
+)
+
 /*
 Provides multiple loginstances.
 Each logger is parameterized with an absolute path to its log-file.
@@ -37,11 +41,6 @@ func Init() {
 // Goroutine for TUI
 func TuiLogger(logs <-chan string) {
 
-	logger, err := gologger.New("./file.log", 200)
-	if err != nil {
-		panic(err)
-	}
-
 	for {
 		msg := <-logs
 		fields := strings.Split(msg, ":")
@@ -50,6 +49,17 @@ func TuiLogger(logs <-chan string) {
 			time.Now().Hour(), time.Now().Minute(), time.Now().Second(),
 			fields[0], fields[1]))
 	}
+
+}
+
+// Write new log entry
+func AddTuiLog(data string) {
+
+	fields := strings.Split(data, ":")
+	logger.WriteString(fmt.Sprintf("<%d-%02d-%02d %02d:%02d:%02d> [%s] %s",
+		time.Now().Year(), time.Now().Month(), time.Now().Day(),
+		time.Now().Hour(), time.Now().Minute(), time.Now().Second(),
+		fields[0], fields[1]))
 
 }
 
