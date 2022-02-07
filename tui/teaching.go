@@ -104,7 +104,7 @@ func (m model) UpdateProfileName(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 /* Show active teaching with spinner */
 func (m model) ViewTeachingRunning() string {
-	str := fmt.Sprintf("\n\n   %s Teaching in progress\n\n", m.spinner.View())
+	str := fmt.Sprintf("\n\n   %s Teaching in progress\n Press f to finish or d to quit\n", m.spinner.View())
 	return str
 }
 

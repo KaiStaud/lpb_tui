@@ -2,6 +2,7 @@ package tui
 
 import (
 	"fmt"
+	"lpb/multilogger"
 	"strconv"
 
 	tea "github.com/charmbracelet/bubbletea"
@@ -91,6 +92,8 @@ func choicesView(m model) string {
 // The second view, after a task has been chosen
 func chosenView(m model) string {
 	var msg string
+
+	multilogger.AddTuiLog(fmt.Sprintf("Debug:Requested OpChange to Mode %d", m.Choice))
 
 	switch m.Choice {
 	case 0:
