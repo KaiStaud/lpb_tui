@@ -7,6 +7,8 @@
 package storage
 
 import (
+	"errors"
+
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
@@ -27,7 +29,9 @@ type Configuration struct {
 
 type Constraints struct {
 	gorm.Model
-	ROM_min float64
+	ROM_min       float64
+	ID            int
+	NumberInChain int
 }
 
 var db *gorm.DB
@@ -59,4 +63,26 @@ func Get(id int) (Coordinates, error) {
 	var product Coordinates
 	db.First(&product, 1) // find product with integer primary key
 	return product, nil
+}
+
+func GetConstraints() ([]Constraints, error) {
+	var constraints []Constraints
+	matches := 0
+	result := db.Find(&constraints)
+
+	// Check if there are missing arms
+	for i := 0; i < int(result.RowsAffected); i++ {
+		for _, v := range constraints {
+			if v.ID == i {
+				matches++
+			}
+		}
+	}
+	// The robot is set up correctly,when each db object corresponds to one arm
+	if result.RowsAffected == int64(matches) {
+		return constraints, result.Error
+	} else {
+		return nil, errors.New("Arms missing/duplicated!")
+	}
+
 }
