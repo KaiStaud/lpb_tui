@@ -8,6 +8,7 @@ package storage
 
 import (
 	"errors"
+	"reflect"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
@@ -29,6 +30,12 @@ type Configuration struct {
 
 type Constraints struct {
 	gorm.Model
+	ROM_min       float64
+	ID            int
+	NumberInChain int
+}
+
+type Arm struct {
 	ROM_min       float64
 	ID            int
 	NumberInChain int
@@ -85,4 +92,21 @@ func GetConstraints() ([]Constraints, error) {
 		return nil, errors.New("Arms missing/duplicated!")
 	}
 
+}
+
+func AddConstraint(a Arm) error {
+	// Check if constraint exists
+	constr, err := GetConstraints()
+	constraint_exist := false
+	for _, v := range constr {
+		if reflect.DeepEqual(v, a) {
+			constraint_exist = true
+		}
+	}
+	if err == nil && constraint_exist == false {
+		db.Create(&Constraints{ROM_min: a.ROM_min, ID: a.ID, NumberInChain: a.NumberInChain})
+	} else {
+		return errors.New("Constraint already exists!")
+	}
+	return nil
 }
