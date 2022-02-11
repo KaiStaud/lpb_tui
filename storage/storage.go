@@ -8,11 +8,12 @@ package storage
 
 import (
 	"errors"
-	"reflect"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
+
+var InsertError error = errors.New("Constraint already exists!")
 
 type Coordinates struct {
 	gorm.Model
@@ -65,42 +66,26 @@ func Init() (*gorm.DB, error) {
 
 func GetArms(db *gorm.DB) ([]Arm, error) {
 	var arms []Arm
-	matches := 0
 	result := db.Find(&arms)
-
-	// Check if there are missing arms
-	for i := 0; i < int(result.RowsAffected); i++ {
-		for _, v := range arms {
-			if v.SiliconID == arms[i].SiliconID {
-				matches++
-			}
-		}
-	}
-	// The robot is set up correctly,when each db object corresponds to one arm
-	if result.RowsAffected == 0 {
-		return arms, nil
-	}
-	if matches == 0 {
-		return arms, nil
-	} else {
-		return nil, errors.New("Arms missing/duplicated!")
-	}
-
+	return arms, result.Error
 }
 
 func AddArm(a Arm, db *gorm.DB) error {
 	// Check if constraint exists
-	constr, err := GetArms(db)
+	constr, _ := GetArms(db)
 	constraint_exist := false
+
 	for _, v := range constr {
-		if reflect.DeepEqual(v, a) {
+		if v.SiliconID == a.SiliconID {
 			constraint_exist = true
 		}
 	}
-	if err == nil && constraint_exist == false {
+
+	if constraint_exist == false {
+		a.ID++
 		db.Create(&a)
 		return nil
 	} else {
-		return errors.New("Constraint already exists!")
+		return InsertError
 	}
 }

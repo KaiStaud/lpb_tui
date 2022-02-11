@@ -7,6 +7,7 @@ import (
 	"lpb/optest"
 	"lpb/pipes"
 	"lpb/storage"
+	"lpb/tui"
 )
 
 func ping(pings chan<- string) {
@@ -22,10 +23,18 @@ func main() {
 
 	optest.SetConfig("~/lpb", "config")
 	// TODO: move DB Handling in Goroutine
-	storage.Init()
+	db, _ := storage.Init()
 	multilogger.Init()
 	framehandling.Init()
-	//tui.Launch()
+
+	a0 := storage.Arm{1, 1, 1, 0}
+	a1 := storage.Arm{2, 2, 2, 0}
+
+	storage.AddArm(a0, db)
+	storage.AddArm(a1, db)
+	storage.AddArm(a1, db)
+
+	tui.Launch()
 
 	// Wait for all channels to be closed
 
