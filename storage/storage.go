@@ -29,74 +29,68 @@ type Configuration struct {
 }
 
 type Constraints struct {
-	gorm.Model
 	ROM_min       float64
 	ID            int
 	NumberInChain int
 }
 
 type Arm struct {
-	ROM_min       float64
 	ID            int
+	SiliconID     int
 	NumberInChain int
+	ROM_min       float64
 }
 
-var db *gorm.DB
-
-func Init() {
+func Init() (*gorm.DB, error) {
 	db, err := gorm.Open(sqlite.Open("profiles.db"), &gorm.Config{})
 	if err != nil {
 		panic("failed to connect database")
 	}
 
 	// Migrate the schemas
-	db.AutoMigrate(&Coordinates{}, Configuration{}, &Constraints{})
-
-	// Create defsult configuration and test profile
-	db.Create(&Coordinates{Name: "Test", X: 40, Y: 40})
-	db.Create(&Configuration{size: 35, position: 1})
-	db.Create(&Configuration{size: 35, position: 2})
-	db.Create(&Constraints{ROM_min: 2})
-	// Read
-
+	db.AutoMigrate(&Coordinates{}, Configuration{}, &Constraints{}, &Arm{})
+	// Add some arms for testing
+	//a0 := Arm{0, 0, 0}
+	// a1 := Arm{0, 1, 1}
+	// a2 := Arm{0, 2, 2}
+	// a3 := Arm{0, 3, 3}
+	// tcp := Arm{0, 4, 4}
+	// db.Create(&a0)
+	// db.Create(&a1)
+	// db.Create(&a2)
+	// db.Create(&a3)
+	// db.Create(&tcp)
+	return db, nil
 }
 
-func Add(name string, x float64, y float64, z float64) error {
-	db.Create(&Coordinates{Name: name, X: x, Y: y})
-	return nil
-}
-
-func Get(id int) (Coordinates, error) {
-	var product Coordinates
-	db.First(&product, 1) // find product with integer primary key
-	return product, nil
-}
-
-func GetConstraints() ([]Constraints, error) {
-	var constraints []Constraints
+func GetArms(db *gorm.DB) ([]Arm, error) {
+	var arms []Arm
 	matches := 0
-	result := db.Find(&constraints)
+	result := db.Find(&arms)
 
 	// Check if there are missing arms
 	for i := 0; i < int(result.RowsAffected); i++ {
-		for _, v := range constraints {
-			if v.ID == i {
+		for _, v := range arms {
+			if v.SiliconID == arms[i].SiliconID {
 				matches++
 			}
 		}
 	}
 	// The robot is set up correctly,when each db object corresponds to one arm
-	if result.RowsAffected == int64(matches) {
-		return constraints, result.Error
+	if result.RowsAffected == 0 {
+		return arms, nil
+	}
+	if matches == 0 {
+		return arms, nil
 	} else {
 		return nil, errors.New("Arms missing/duplicated!")
 	}
 
 }
 
-func AddConstraint(a Arm) error {
+func AddArm(a Arm, db *gorm.DB) error {
 	// Check if constraint exists
-	constr, err := GetConstraints()
+	constr, err := GetArms(db)
 	constraint_exist := false
 	for _, v := range constr {
 		if reflect.DeepEqual(v, a) {
@@ -104,9 +98,9 @@ func AddConstraint(a Arm) error {
 		}
 	}
 	if err == nil && constraint_exist == false {
-		db.Create(&Constraints{ROM_min: a.ROM_min, ID: a.ID, NumberInChain: a.NumberInChain})
+		db.Create(&a)
+		return nil
 	} else {
 		return errors.New("Constraint already exists!")
 	}
-	return nil
 }

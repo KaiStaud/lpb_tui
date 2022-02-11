@@ -1,6 +1,4 @@
-package datarecording
-
-import "lpb/storage"
+package framehandling
 
 /*
 Data Recording is used to provide data during dispatching jobs.
@@ -29,27 +27,21 @@ var (
 	arms map[int32]DataFrame
 )
 
-// Utility Function to add new Arm
-func AddArm(arm DataFrame) {
-	arms[arm.ID] = DataFrame{arm.ID, arm.PositionInChain,
-		arm.CoordinateX, arm.RotationY, arm.CoordinateZ,
-		arm.RotationX, arm.RotationY, arm.RotationZ}
-}
-
 // Initialize the timeout and load frame data
-func Init(timeout_ms int) error {
+func Init() {
 	arms = make(map[int32]DataFrame)
 	// Get all registered arms from DB
-	constr, err := storage.GetConstraints()
-	if err == nil {
-		for _, v := range constr {
-			var initframe DataFrame
-			initframe.ID = v.ID
-			initframe.PositionInChain = v.NumberInChain
-			AddArm(initframe)
-		}
-	}
-	return err
+
+	/* 	constr, err := storage.GetConstraints()
+	   	if err == nil {
+	   		for _, v := range constr {
+	   			var initframe DataFrame
+	   			initframe.ID = v.ID
+	   			initframe.PositionInChain = v.NumberInChain
+	   			AddArm(initframe)
+	   		}
+	   	}
+	   	return err */
 
 }
 
