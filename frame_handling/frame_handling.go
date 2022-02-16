@@ -1,5 +1,12 @@
 package framehandling
 
+import (
+	"errors"
+	"lpb/storage"
+
+	"gorm.io/gorm"
+)
+
 /*
 Data Recording is used to provide data during dispatching jobs.
 Also the module captures and buffers data  during teaching phase to provide
@@ -13,8 +20,9 @@ Missing-Frame Error
 */
 
 type DataFrame struct {
-	ID              int
+	SiliconID       int
 	PositionInChain int
+	FrameID         int
 	CoordinateX     int32
 	CoordinateY     int32
 	CoordinateZ     int32
@@ -24,24 +32,25 @@ type DataFrame struct {
 }
 
 var (
-	arms map[int32]DataFrame
+	arms map[int]DataFrame
 )
 
 // Initialize the timeout and load frame data
-func Init() {
-	arms = make(map[int32]DataFrame)
+func Init(db *gorm.DB) error {
+	arms = make(map[int]DataFrame)
 	// Get all registered arms from DB
+	constr, err := storage.GetArms(db)
+	if err != nil {
+		return err
+	} else {
+		// Copy Data and initialize Coordinates / Routation to zero (will be transmitted seperatly)
+		for _, v := range constr {
+			arms[v.SiliconID] = DataFrame{v.SiliconID, v.NumberInChain, 0, 0, 0, 0, 0, 0, 0}
+			// Compute the correct FrameID
 
-	/* 	constr, err := storage.GetConstraints()
-	   	if err == nil {
-	   		for _, v := range constr {
-	   			var initframe DataFrame
-	   			initframe.ID = v.ID
-	   			initframe.PositionInChain = v.NumberInChain
-	   			AddArm(initframe)
-	   		}
-	   	}
-	   	return err */
+		}
+		return nil
+	}
 
 }
 
@@ -50,19 +59,40 @@ func Init() {
 // Correct Frame-ID
 // Signature
 // Number-in-chain
-func ProcessFrame(can_frame DataFrame) {
+func ProcessFrame(can_frame DataFrame) error {
 
+	// Is FrameID registered?
+	if (arms[can_frame.SiliconID] == DataFrame{}) {
+		return errors.New("Couldn't match Silicon ID")
+	} else if arms[can_frame.SiliconID].PositionInChain == 0 {
+		return errors.New("Zero not allowed as NumberInChain!")
+	} else if arms[can_frame.SiliconID].SiliconID != can_frame.SiliconID {
+		return errors.New("Silicon IDs mismatched!")
+	} else if arms[can_frame.SiliconID].PositionInChain != can_frame.PositionInChain {
+		return errors.New("Position in Chain inconsistent")
+	} else {
+		// All Criteria matched
+		return nil
+	}
 }
 
 func DeleteFrameHistory() {
 
 }
 
-/* Simulation */
-func SimulateFrames() {
+/* Simulation run in goroutine.  For running a simulation, the Field 'simulaition' must be set to 'yes' in config.yaml*/
+
+// Send Dataframes every 10ms to simulate Changes in Position
+func SimulateTeachingFrames() {
 
 }
 
+// Calculate a linear movement between Setpoints
+func SimulateMotionFrames() {
+
+}
+
+// Stop sending Frames for 20ms
 func SimulateFrameTimeout() {
 
 }

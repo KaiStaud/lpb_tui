@@ -50,17 +50,6 @@ func Init() (*gorm.DB, error) {
 
 	// Migrate the schemas
 	db.AutoMigrate(&Coordinates{}, Configuration{}, &Constraints{}, &Arm{})
-	// Add some arms for testing
-	//a0 := Arm{0, 0, 0}
-	// a1 := Arm{0, 1, 1}
-	// a2 := Arm{0, 2, 2}
-	// a3 := Arm{0, 3, 3}
-	// tcp := Arm{0, 4, 4}
-	// db.Create(&a0)
-	// db.Create(&a1)
-	// db.Create(&a2)
-	// db.Create(&a3)
-	// db.Create(&tcp)
 	return db, nil
 }
 
