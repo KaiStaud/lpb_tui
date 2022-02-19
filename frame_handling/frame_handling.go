@@ -42,10 +42,11 @@ var (
 	stop_sim chan bool
 	shutdown chan bool
 
-	SIDError       error = errors.New("Couldn't match Silicon ID")
-	NullFrameError error = errors.New("Nulled Frame detected")
-	NICNotSetError error = errors.New("Zero not allowed as NumberInChain!")
-	NICError       error = errors.New("Couldn't match NUmberInChain!")
+	NullFrameError         error = errors.New("Nulled Frame detected")
+	NICNullError           error = errors.New("NumberInChain incorrect in DB!")
+	NICNotTransmittedError error = errors.New("NumberInChain not transmitted!")
+	NICError               error = errors.New("Couldn't match NUmberInChain!")
+	FrameIDError           error = errors.New("Couldn't match Frame ID!")
 )
 
 // Initialize the timeout and load frame data
@@ -78,11 +79,16 @@ func ProcessFrame(can_frame DataFrame) error {
 	if (arms[can_frame.SiliconID] == DataFrame{}) {
 		return NullFrameError
 	} else if arms[can_frame.SiliconID].PositionInChain == 0 {
-		return NullFrameError
-	} else if arms[can_frame.SiliconID].SiliconID != can_frame.SiliconID {
-		return SIDError
+		return NICNullError
 	} else if arms[can_frame.SiliconID].PositionInChain != can_frame.PositionInChain {
-		return NICError
+		if can_frame.PositionInChain == 0 {
+			return NICNotTransmittedError
+		} else {
+			return NICError
+		}
+
+	} else if arms[can_frame.SiliconID].FrameID != can_frame.FrameID {
+		return FrameIDError
 	} else {
 		// All Criteria matched
 		return nil
@@ -117,7 +123,12 @@ func GeneralFrameHandler(sim_frame <-chan DataFrame, can_frame <-chan can.Frame)
 func InitSimulation(count int) error {
 	// Generate IDs and Positions
 	for i := 0; i < count; i++ {
-		arms[i] = DataFrame{i, i * 100, 0, 0, 0, 0, 0, 0, 0}
+		if i == 2 {
+			// Edit Element 2 intentionally, to contain wrong NIC
+			arms[i] = DataFrame{i, 0, i * 100, 0, 0, 0, 0, 0, 0}
+		} else {
+			arms[i] = DataFrame{i, i, i * 100, 0, 0, 0, 0, 0, 0}
+		}
 	}
 	return nil
 }
