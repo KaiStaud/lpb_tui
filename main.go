@@ -7,7 +7,6 @@ import (
 	"lpb/optest"
 	"lpb/pipes"
 	"lpb/storage"
-	"lpb/tui"
 )
 
 func ping(pings chan<- string) {
@@ -15,8 +14,15 @@ func ping(pings chan<- string) {
 }
 
 func pong(pings <-chan string) {
-	msg := <-pings
-	fmt.Print(msg)
+	for {
+		select {
+		case <-quit:
+			return
+		default:
+			msg := <-pings
+			fmt.Print(msg)
+		}
+
 }
 
 func main() {
@@ -25,14 +31,9 @@ func main() {
 	// TODO: move DB Handling in Goroutine
 	db, _ := storage.Init()
 	multilogger.Init()
-	framehandling.Init(db)
 
-	// a0 := storage.Arm{1, 1, 1, 0}
-	// a1 := storage.Arm{2, 2, 2, 0}
-
-	// storage.AddArm(a0, db)
-	// storage.AddArm(a1, db)
-	// storage.AddArm(a1, db)
+	frames := make(chan framehandling.DataFrame)
+	framehandling.Init(db, frames)
 
 	tui.Launch()
 

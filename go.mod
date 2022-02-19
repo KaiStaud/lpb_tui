@@ -18,7 +18,10 @@ require (
 	gorm.io/gorm v1.22.3
 )
 
-require github.com/syrinsecurity/gologger v1.2.0 // indirect
+require (
+	github.com/brutella/can v0.0.2 // indirect
+	github.com/syrinsecurity/gologger v1.2.0 // indirect
+)
 
 require (
 	github.com/atotto/clipboard v0.1.2 // indirect
