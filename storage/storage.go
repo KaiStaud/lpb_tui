@@ -9,11 +9,13 @@ package storage
 import (
 	"errors"
 
+	"github.com/go-gl/mathgl/mgl64"
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
 var InsertError error = errors.New("Constraint already exists!")
+var db *gorm.DB
 
 type Coordinates struct {
 	gorm.Model
@@ -42,26 +44,32 @@ type Arm struct {
 	ROM_min       float64
 }
 
-func Init() (*gorm.DB, error) {
-	db, err := gorm.Open(sqlite.Open("profiles.db"), &gorm.Config{})
+func Init(path string) error {
+	var err error
+	db, err = gorm.Open(sqlite.Open(path), &gorm.Config{})
+
 	if err != nil {
 		panic("failed to connect database")
 	}
 
 	// Migrate the schemas
 	db.AutoMigrate(&Coordinates{}, Configuration{}, &Constraints{}, &Arm{})
-	return db, nil
+	return nil
 }
 
-func GetArms(db *gorm.DB) ([]Arm, error) {
+// Return all saved arms from db
+func GetArms() ([]Arm, error) {
 	var arms []Arm
 	result := db.Find(&arms)
 	return arms, result.Error
 }
 
-func AddArm(a Arm, db *gorm.DB) error {
+// Add an arm to existing configuration
+// Checks if arm is known to lpb's configuration via Silicon ID.
+// If unknown, the current configuration needs to be reset.
+func AddArm(a Arm) error {
 	// Check if constraint exists
-	constr, _ := GetArms(db)
+	constr, _ := GetArms()
 	constraint_exist := false
 
 	for _, v := range constr {
@@ -76,5 +84,20 @@ func AddArm(a Arm, db *gorm.DB) error {
 		return nil
 	} else {
 		return InsertError
+	}
+}
+
+// Retrieve TCP vector by name.
+// Returns nil and not-null-vector if name is matches exactly once
+func GetCoordinatesByName(name string) (error, mgl64.Vec3) {
+	var matches []Coordinates
+	db.Where("name = ?", name).Find(&matches)
+
+	if len(matches) == 0 {
+		return errors.New("No match found"), mgl64.Vec3{}
+	} else if len(matches) > 1 {
+		return errors.New("Name used multiple times"), mgl64.Vec3{}
+	} else {
+		return nil, mgl64.Vec3{matches[0].X, matches[0].Y, matches[0].Z}
 	}
 }

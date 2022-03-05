@@ -8,7 +8,6 @@ import (
 
 	"github.com/brutella/can"
 	"github.com/go-gl/mathgl/mgl64"
-	"gorm.io/gorm"
 )
 
 /*
@@ -50,10 +49,10 @@ var (
 )
 
 // Initialize the timeout and load frame data
-func Init(db *gorm.DB, frame_channel chan DataFrame) error {
+func Init(frame_channel chan DataFrame) error {
 	//arms = make(map[int]DataFrame)
 	// Get all registered arms from DB
-	constr, err := storage.GetArms(db)
+	constr, err := storage.GetArms()
 	if err != nil {
 		return err
 	} else {
@@ -133,14 +132,15 @@ func InitSimulation(count int) error {
 	return nil
 }
 
-func SwitchSimulation(Idle bool, Motion bool, wp []mgl64.Vec2) {
+// Preselect simulation:
+func SwitchSimulation(Idle bool, Motion bool) {
 	if Idle {
 		go SimulateIdleFrames(len(arms), frames_channel)
 	} else {
 		stop_sim <- true
 	}
 	if Motion {
-		go SimulateMotionFrames(len(arms), wp, frames_channel)
+		//	go SimulateMotionFrames(len(arms), wp, frames_channel)
 	} else {
 		stop_sim <- true
 	}

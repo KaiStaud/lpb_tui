@@ -9,6 +9,7 @@ package tui
 
 import (
 	"fmt"
+	"lpb/multilogger"
 	"lpb/pipes"
 	"time"
 
@@ -17,6 +18,7 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
+	"github.com/go-gl/mathgl/mgl64"
 	"github.com/muesli/reflow/indent"
 	"github.com/muesli/termenv"
 )
@@ -26,14 +28,15 @@ const (
 	progressFullChar  = "█"
 	progressEmptyChar = "░"
 
-	menue_options = 5
-	max_choices   = 5
+	menue_options = 6 // Options in first menue
+	max_choices   = 4 // Options in sub-menues, currently only 4 TODO:Use Slice instead!
 
-	profile_editor = 1
-	run_options    = 2
-	test_results   = 3
-	shutdown       = 4
-	teaching       = 5
+	profile_editor = 0
+	run_options    = 1
+	test_results   = 2
+	shutdown       = 3
+	teaching       = 4
+	simulation     = 5
 )
 
 // General stuff for styling the view
@@ -51,14 +54,19 @@ var (
 	defaultHight = 14
 
 	//Expose the logging channel in module
-	tuiLogs chan<- string
+	tuiLogs  chan<- string
+	jobqueue chan mgl64.Vec3
 )
 
+// Create channels for sending data across programm
+func StartJobQueue(queue chan mgl64.Vec3) {
+	jobqueue = queue
+
+}
+
 // Initialize and launch textinerface
-// Connect sender channel for logging
 func Launch() {
 	pipes.Init()
-	//	tuiLogs = logs
 	items := []list.Item{
 		item{title: "Home", desc: "Home the robot"},
 		item{title: "Shutdown", desc: "Poweroff System"},
@@ -77,7 +85,7 @@ func Launch() {
 	spinner.Tick()
 
 	initialModel := model{0, false, 0, false, 10, 0, 0, false, false, list.NewModel(items, list.NewDefaultDelegate(), defaultWidth, defaultHight), nil, "", ti, s, nil}
-	initialModel.list.Title = "My Fave Things"
+	initialModel.list.Title = "Saved Profiles"
 	p := tea.NewProgram((initialModel))
 	p.EnterAltScreen()
 
@@ -146,16 +154,18 @@ func (m model) View() string {
 func viewHandler(m model) string {
 	// Are there any changes in any level?
 	if m.OptionChosen {
-		if m.Option == 1 {
+		if m.Option == run_options {
 			if m.Chosen {
 				return chosenView(m)
 			} else {
 				return choicesView(m)
 			}
-		} else if m.Option == 0 {
+		} else if m.Option == profile_editor {
 			return m.ViewList()
-		} else if m.Option == 4 {
+		} else if m.Option == teaching {
 			return m.ViewTeaching()
+		} else if m.Option == simulation {
+			return m.ViewSimulation()
 		} else {
 			return terminalOptions(m)
 		}
@@ -165,18 +175,37 @@ func viewHandler(m model) string {
 	}
 }
 
-// Sub-update functions
+// Increments index of selected checkbox.
+// Index is changed globally, no  need to implement it in xxx_Update!
+// Support is limited to 2-layer hierarchy!
 func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 	var cmd tea.Cmd
 
-	// Lists keymappings are handeled seperately:
+	// Keyevents in profile editor are handled seperately:
 	if m.OptionChosen {
 		switch m.Option {
-		case 0:
+		case profile_editor:
 			m.list, cmd = m.list.Update(msg)
-			return m, cmd
 
-		case 4:
+			switch msg := msg.(type) {
+
+			// Parse keyboard inputs:
+			case tea.KeyMsg:
+				switch msg.String() {
+
+				case "enter": // Get Selected Item:
+					i, ok := m.list.SelectedItem().(item)
+					if ok {
+						m.list_choice = i.Title()
+						err := AddJobToQueue(m.list_choice)
+						s := fmt.Sprintf("Info:Added item %s to queue, returned %v", m.list_choice, err)
+						multilogger.AddTuiLog(s)
+					}
+				}
+			}
+			// If enter-key was pressed, add item to queue
+			return m, cmd
+		case teaching:
 			return m.UpdateTeaching(msg)
 		default:
 		}
@@ -192,7 +221,11 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 		// User already ticked a  checkbox, we are no longer in top-menue
 		if m.OptionChosen {
 			if m.Option != 0 { // Option 0 is mapped to Editor view!
+				s := msg.String()
+
 				switch msg.String() {
+				// The number of choices depends on selected sub-menue:
+				//max_choices
 				case "j", "down":
 					if m.Choice < max_choices {
 						m.Choice += 1
@@ -203,6 +236,12 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 					}
 				case "enter":
 					m.Chosen = true
+					if m.Option == simulation {
+						m.UpdateSimulation(msg)
+					}
+
+				default:
+					fmt.Println(s)
 				}
 			}
 			// Still in top menue, increment / decrement option

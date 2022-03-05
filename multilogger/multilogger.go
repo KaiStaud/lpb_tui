@@ -56,10 +56,14 @@ func TuiLogger(logs <-chan string) {
 func AddTuiLog(data string) {
 
 	fields := strings.Split(data, ":")
+	// No loglevel or empty string: tag w/ unknown
+	if len(fields) <= 1 {
+		fields[1] = "Unknown"
+	}
 	logger.WriteString(fmt.Sprintf("<%d-%02d-%02d %02d:%02d:%02d> [%s] %s",
 		time.Now().Year(), time.Now().Month(), time.Now().Day(),
 		time.Now().Hour(), time.Now().Minute(), time.Now().Second(),
-		fields[0], fields[1]))
+		fields[0], strings.ToUpper(fields[1])))
 
 }
 

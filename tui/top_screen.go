@@ -20,12 +20,13 @@ func terminalOptions(m model) string {
 	tpl += subtle("j/k, up/down: select") + dot + subtle("enter: choose") + dot + subtle("q: quit")
 
 	choices := fmt.Sprintf(
-		"%s\n%s\n%s\n%s\n%s",
+		"%s\n%s\n%s\n%s\n%s\n%s",
 		checkbox("Profile Editor", c == 0),
 		checkbox("Run Options", c == 1),
 		checkbox("Test Results", c == 2),
 		checkbox("Shutdown", c == 3),
 		checkbox("Teaching", c == 4),
+		checkbox("Simulation", c == 5),
 	)
 
 	return fmt.Sprintf(tpl, choices, colorFg(strconv.Itoa(m.Ticks), "79"))

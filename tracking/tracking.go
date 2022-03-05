@@ -28,6 +28,8 @@ var (
 	// Increment of progress per waypoint
 	increment float64
 
+	// Queue with waiting jobs:
+	jobqueue chan mgl64.Vec3
 	// Waypoints of profile:
 	waypoints []mgl64.Vec2
 	index     int
@@ -43,8 +45,9 @@ func PushProgress(progress float64) {
 /*
 * Initializes size of checkbox and resets logic to known state
  */
-func Initialize(radius float64) error {
+func Initialize(radius float64, queue chan mgl64.Vec3) error {
 	R = radius
+	jobqueue = queue
 	return nil
 }
 

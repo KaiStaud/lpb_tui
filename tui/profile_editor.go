@@ -8,32 +8,34 @@ package tui
  */
 
 import (
-	tea "github.com/charmbracelet/bubbletea"
+	"lpb/storage"
+
 	"github.com/charmbracelet/lipgloss"
 )
 
 var docStyle = lipgloss.NewStyle().Margin(1, 2)
 
 type item struct {
-	title, desc string
+	title,
+	desc string
 }
 
 func (i item) Title() string       { return i.title }
 func (i item) Description() string { return i.desc }
 func (i item) FilterValue() string { return i.title }
 
-func (m model) UpdateList(msg tea.Msg) (tea.Model, tea.Cmd) {
-	switch msg := msg.(type) {
-	case tea.WindowSizeMsg:
-		top, right, bottom, left := docStyle.GetMargin()
-		m.list.SetSize(msg.Width-left-right, msg.Height-top-bottom)
-	}
-
-	var cmd tea.Cmd
-	m.list, cmd = m.list.Update(msg)
-	return m, cmd
-}
-
 func (m model) ViewList() string {
 	return docStyle.Render(m.list.View())
+}
+
+// Send Profile into Waiting-Queue
+func AddJobToQueue(name string) error {
+
+	// Get index by name
+	err, tcp := storage.GetCoordinatesByName(name)
+	if err == nil {
+		jobqueue <- tcp
+	}
+	// Push info into queue
+	return err
 }
