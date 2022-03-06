@@ -145,6 +145,7 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 	// FinshMessage?
 	if _, ok := msg.(HandshakeMsg); ok {
 		m.Chosen = false
+		time.Sleep(time.Second * 2)
 	}
 	// Handle Selections  and Animations differently:
 
@@ -180,8 +181,6 @@ func viewHandler(m model) string {
 			if m.Chosen == false {
 				return m.ViewList()
 			} else {
-				//jobqueue <- mgl64.Vec3{}
-
 				if m.err == nil {
 					return m.ViewSucess("Added job to queue")
 
@@ -228,7 +227,7 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 						s := fmt.Sprintf("Info:Added item %s to queue, returned %v", m.list_choice, err)
 						multilogger.AddTuiLog(s)
 						m.Chosen = true
-						m.err = err
+						m.err = nil
 					}
 				default:
 					m.Chosen = false
