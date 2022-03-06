@@ -11,15 +11,18 @@ import (
 * Therefore its easier to find models members
  */
 type model struct {
-	Option       int
+	Option       int // First menu level
 	OptionChosen bool
-	Choice       int
-	Chosen       bool
-	Ticks        int
-	Frames       int
-	Progress     float64
-	Loaded       bool
-	Quitting     bool
+
+	Choice int // Second menu level
+	Chosen bool
+
+	Ticks  int // Time in seconds
+	Frames int
+
+	Progress float64 // Movement-Progress in %
+	Loaded   bool    // true when progress ==1
+	Quitting bool
 
 	list        list.Model
 	list_items  []item

@@ -11,7 +11,9 @@ package tracking
 
 import (
 	"errors"
+	"lpb/tui"
 
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-gl/mathgl/mgl64"
 )
 
@@ -33,9 +35,31 @@ var (
 	// Waypoints of profile:
 	waypoints []mgl64.Vec2
 	index     int
+
+	// Stop Receiver:
+	stop_receiver chan bool
 )
 
 //----------------------- Functions ----------------------- //
+
+/*
+Receive new programs,update queue on finish
+*/
+func StartReceiveQueue(p *tea.Program, c <-chan mgl64.Vec3) {
+	for {
+		select {
+		case <-stop_receiver:
+			return
+		case <-c:
+			// Send tui a handshake signal, the program was received:
+			p.Send(tui.HandshakeMsg{})
+			// Inform tui on all program states:
+			// When program is #1 send in progress
+			// Else sende pending
+		default:
+		}
+	}
+}
 
 /* Receive Progress-Information from tracking module */
 func PushProgress(progress float64) {

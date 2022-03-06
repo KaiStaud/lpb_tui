@@ -41,6 +41,7 @@ const (
 
 // General stuff for styling the view
 var (
+	p             *tea.Program
 	term          = termenv.ColorProfile()
 	keyword       = makeFgStyle("211")
 	subtle        = makeFgStyle("241")
@@ -55,17 +56,17 @@ var (
 
 	//Expose the logging channel in module
 	tuiLogs  chan<- string
-	jobqueue chan mgl64.Vec3
+	jobqueue chan<- mgl64.Vec3
 )
 
 // Create channels for sending data across programm
-func StartJobQueue(queue chan mgl64.Vec3) {
+func StartJobQueue(queue chan<- mgl64.Vec3) {
 	jobqueue = queue
 
 }
 
 // Initialize and launch textinerface
-func Launch() {
+func Launch() *tea.Program {
 	pipes.Init()
 	items := []list.Item{
 		item{title: "Home", desc: "Home the robot"},
@@ -92,11 +93,12 @@ func Launch() {
 	if err := p.Start(); err != nil {
 		fmt.Println("could not start program:", err)
 	}
-
+	return p
 }
 
 type tickMsg struct{}
 type frameMsg struct{}
+type HandshakeMsg struct{} //Signals a finished fsm
 
 func tick() tea.Cmd {
 	return tea.Tick(time.Second, func(time.Time) tea.Msg {
@@ -128,6 +130,9 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		if k == "esc" {
 			m.OptionChosen = false
 			m.Option = 0
+		}
+		if k == "a" {
+			m.Chosen = false
 		}
 	}
 	// Handle Selections  and Animations differently:
@@ -161,7 +166,16 @@ func viewHandler(m model) string {
 				return choicesView(m)
 			}
 		} else if m.Option == profile_editor {
-			return m.ViewList()
+			if m.Chosen == false {
+				return m.ViewList()
+			} else {
+				if m.err == nil {
+					return m.ViewSucess("Added job to queue")
+
+				} else {
+					return m.ViewError(m.err)
+				}
+			}
 		} else if m.Option == teaching {
 			return m.ViewTeaching()
 		} else if m.Option == simulation {
@@ -200,7 +214,12 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 						err := AddJobToQueue(m.list_choice)
 						s := fmt.Sprintf("Info:Added item %s to queue, returned %v", m.list_choice, err)
 						multilogger.AddTuiLog(s)
+						m.Chosen = true
+						m.err = nil
 					}
+				default:
+					m.Chosen = false
+
 				}
 			}
 			// If enter-key was pressed, add item to queue

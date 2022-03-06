@@ -3,6 +3,7 @@ package tui
 import (
 	"fmt"
 	"lpb/multilogger"
+	"time"
 
 	"github.com/charmbracelet/bubbles/spinner"
 	tea "github.com/charmbracelet/bubbletea"
@@ -57,10 +58,12 @@ func (m model) UpdateTeaching(msg tea.Msg) (tea.Model, tea.Cmd) {
 		return m.UpdateTeachingRunning(msg)
 
 	case teaching_done:
+		time.Sleep(time.Millisecond * 2000)
 		teaching_state = ack_pending
 		m.OptionChosen = false
 		m.Option = 0
 		return m.UpdateTeachingDone(msg)
+
 	default:
 		teaching_state = ack_pending
 		return m, nil
@@ -149,10 +152,6 @@ func (m model) UpdateTeachingRunning(msg tea.Msg) (tea.Model, tea.Cmd) {
 		m.spinner, cmd = m.spinner.Update(msg)
 		return m, cmd
 	}
-
-	//	var cmd tea.Cmd
-	//	m.spinner, cmd = m.spinner.Update(msg)
-	//	return m, cmd
 }
 
 /* Show ! and error message if teaching was unexpectily quit */
@@ -164,6 +163,5 @@ func (m model) UpdateTeachingDone(msg tea.Msg) (tea.Model, tea.Cmd) {
 
 /* Show "Teaching Done" on "f" input */
 func (m model) ViewTeachingDone() string {
-	return "Teaching finished!"
-
+	return m.ViewSucess("Teaching finished")
 }
