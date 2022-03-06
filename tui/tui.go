@@ -11,6 +11,7 @@ import (
 	"fmt"
 	"lpb/multilogger"
 	"lpb/pipes"
+	"os"
 	"time"
 
 	"github.com/charmbracelet/bubbles/list"
@@ -62,8 +63,10 @@ var (
 // Create channels for sending data across programm
 func StartJobQueue(queue chan<- mgl64.Vec3) {
 	jobqueue = queue
-	queue <- mgl64.Vec3{}
 
+}
+func GetTui() *tea.Program {
+	return p
 }
 
 // Initialize and launch textinerface
@@ -90,16 +93,18 @@ func Launch() *tea.Program {
 	initialModel.list.Title = "Saved Profiles"
 	p := tea.NewProgram((initialModel))
 	p.EnterAltScreen()
-
-	if err := p.Start(); err != nil {
-		fmt.Println("could not start program:", err)
-	}
+	go func() {
+		if err := p.Start(); err != nil {
+			fmt.Println("could not start program:", err)
+			os.Exit(1)
+		}
+	}()
 	return p
 }
 
 type tickMsg struct{}
 type frameMsg struct{}
-type HandshakeMsg struct{} //Signals a finished fsm
+type HandshakeMsg struct{ d string } //Signals a finished fsm
 
 func tick() tea.Cmd {
 	return tea.Tick(time.Second, func(time.Time) tea.Msg {
@@ -136,6 +141,11 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 			m.Chosen = false
 		}
 	}
+
+	// FinshMessage?
+	if _, ok := msg.(HandshakeMsg); ok {
+		m.Chosen = false
+	}
 	// Handle Selections  and Animations differently:
 
 	// Is A selection made?
@@ -170,6 +180,8 @@ func viewHandler(m model) string {
 			if m.Chosen == false {
 				return m.ViewList()
 			} else {
+				//jobqueue <- mgl64.Vec3{}
+
 				if m.err == nil {
 					return m.ViewSucess("Added job to queue")
 
@@ -216,7 +228,7 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 						s := fmt.Sprintf("Info:Added item %s to queue, returned %v", m.list_choice, err)
 						multilogger.AddTuiLog(s)
 						m.Chosen = true
-						m.err = nil
+						m.err = err
 					}
 				default:
 					m.Chosen = false
