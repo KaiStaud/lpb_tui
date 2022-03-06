@@ -62,6 +62,7 @@ var (
 // Create channels for sending data across programm
 func StartJobQueue(queue chan<- mgl64.Vec3) {
 	jobqueue = queue
+	queue <- mgl64.Vec3{}
 
 }
 
