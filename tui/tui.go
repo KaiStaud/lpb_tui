@@ -10,7 +10,6 @@ package tui
 import (
 	"fmt"
 	"lpb/multilogger"
-	"lpb/pipes"
 	"os"
 	"time"
 
@@ -56,8 +55,10 @@ var (
 	defaultHight = 14
 
 	//Expose the logging channel in module
-	tuiLogs  chan<- string
-	jobqueue chan<- mgl64.Vec3
+	tuiLogs      chan<- string
+	jobqueue     chan<- mgl64.Vec3
+	idle_sim     chan<- bool
+	movement_sim chan<- bool
 )
 
 // Create channels for sending data across programm
@@ -70,8 +71,11 @@ func GetTui() *tea.Program {
 }
 
 // Initialize and launch textinerface
-func Launch() *tea.Program {
-	pipes.Init()
+func Launch(idle chan<- bool, movement chan<- bool) *tea.Program {
+	// Connect channels
+	idle_sim = idle
+	movement_sim = movement
+
 	items := []list.Item{
 		item{title: "Home", desc: "Home the robot"},
 		item{title: "Shutdown", desc: "Poweroff System"},
@@ -191,7 +195,11 @@ func viewHandler(m model) string {
 		} else if m.Option == teaching {
 			return m.ViewTeaching()
 		} else if m.Option == simulation {
-			return m.ViewSimulation()
+			if m.Chosen == false {
+				return m.ViewSimulation()
+			} else {
+				return m.ViewSucess("Switched Simulation!")
+			}
 		} else {
 			return terminalOptions(m)
 		}
@@ -227,7 +235,7 @@ func updateHandler(msg tea.Msg, m model) (tea.Model, tea.Cmd) {
 						s := fmt.Sprintf("Info:Added item %s to queue, returned %v", m.list_choice, err)
 						multilogger.AddTuiLog(s)
 						m.Chosen = true
-						m.err = nil
+						m.err = err
 					}
 				default:
 					m.Chosen = false

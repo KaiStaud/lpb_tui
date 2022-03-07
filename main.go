@@ -33,6 +33,9 @@ func main() {
 	multilogger.Init()
 
 	frames := make(chan framehandling.DataFrame)
+	idle := make(chan bool)
+	movement := make(chan bool)
+
 	framehandling.Init(frames)
 
 	// Create a channel for passing data from tui to tracking entity
@@ -40,8 +43,10 @@ func main() {
 	tracking.Initialize(3, data)
 	tui.StartJobQueue(data)
 
-	p := tui.Launch()
+	p := tui.Launch(idle, movement)
 	go tracking.StartReceiveQueue(p, data)
+	framehandling.StartSimSwitch(p, idle, movement)
+
 	//TODO: Use Waitgroup!
 	for {
 		time.Sleep(time.Second)

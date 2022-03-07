@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"strconv"
 
-	framehandling "lpb/frame_handling"
-
 	tea "github.com/charmbracelet/bubbletea"
 )
 
@@ -19,17 +17,6 @@ const (
 
 // Change simulated frames after selecting
 func (m model) UpdateSimulation(msg tea.Msg) (tea.Model, tea.Cmd) {
-
-	// Change frames, when 'enter' is pressed:
-	if m.OptionChosen {
-		switch m.Option {
-		case sim_move:
-			framehandling.SwitchSimulation(false, true)
-		case sim_idle:
-		default:
-		}
-
-	}
 
 	// Unselect 'choosen' flag
 	m.Option = 0

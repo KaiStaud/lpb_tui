@@ -3,10 +3,12 @@ package framehandling
 import (
 	"errors"
 	"lpb/storage"
+	"lpb/tui"
 	"math/rand"
 	"time"
 
 	"github.com/brutella/can"
+	tea "github.com/charmbracelet/bubbletea"
 	"github.com/go-gl/mathgl/mgl64"
 )
 
@@ -132,6 +134,23 @@ func InitSimulation(count int) error {
 	return nil
 }
 
+// Switches asyncronously the used simulation
+func StartSimSwitch(p *tea.Program, idle <-chan bool, movement <-chan bool) {
+	for {
+		select {
+		case <-shutdown:
+			return
+		case <-idle:
+			SwitchSimulation(<-idle, false)
+			p.Send(tui.HandshakeMsg{})
+		case <-movement:
+			SwitchSimulation(<-idle, false)
+			p.Send(tui.HandshakeMsg{})
+		default:
+		}
+	}
+}
+
 // Preselect simulation:
 func SwitchSimulation(Idle bool, Motion bool) {
 	if Idle {
@@ -140,7 +159,7 @@ func SwitchSimulation(Idle bool, Motion bool) {
 		stop_sim <- true
 	}
 	if Motion {
-		//	go SimulateMotionFrames(len(arms), wp, frames_channel)
+		//go SimulateMotionFrames(len(arms), frames_channel)
 	} else {
 		stop_sim <- true
 	}
@@ -174,12 +193,15 @@ func SimulateIdleFrames(count int, tx_frame chan<- DataFrame) {
 
 // Calculate a linear movement between Setpoints
 // Set field "time_slots" to > 1sec for correct frames, < 1sec for frame Timeouts
-func SimulateMotionFrames(count int, waypoints []mgl64.Vec2, tx_frame chan<- DataFrame) {
+func SimulateMotionFrames(count int, id <-chan int, tx_frame chan<- DataFrame) {
 	for {
 		select {
 		case <-stop_sim:
 			return
 		default:
+			// Get all waypoins from db by id
+			waypoints := make([]mgl64.Vec2, 10)
+			// Play back all waypoints
 			for _, v := range waypoints {
 
 				var temp_frame DataFrame
