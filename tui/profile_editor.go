@@ -31,9 +31,11 @@ func (m model) ViewList() string {
 // Send Profile into Waiting-Queue
 func AddJobToQueue(name string) error {
 	// Get index by name
-	err, tcp := storage.GetCoordinatesByName(name)
+	//err, tcp := storage.GetCoordinatesByName(name)
+	err, id := storage.GetIDByName(name)
+
 	if err == nil {
-		jobqueue <- tcp
+		jobqueue <- id
 	}
 	// Push info into queue
 	return err

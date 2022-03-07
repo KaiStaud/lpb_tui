@@ -39,6 +39,7 @@ type DataFrame struct {
 var (
 	arms           = make(map[int]DataFrame)
 	frames_channel chan DataFrame // All simulated / CAN-Frames are routed over this channel
+	id_loopback    chan int       // Loops back id from database into simulation
 	// Channels to stop looping goroutines
 	stop_sim chan bool
 	shutdown chan bool
@@ -51,9 +52,10 @@ var (
 )
 
 // Initialize the timeout and load frame data
-func Init(frame_channel chan DataFrame) error {
+func Init(frame_channel chan DataFrame, id_sim_channel chan int) error {
 	//arms = make(map[int]DataFrame)
 	// Get all registered arms from DB
+	id_loopback = id_sim_channel
 	constr, err := storage.GetArms()
 	if err != nil {
 		return err
@@ -153,15 +155,11 @@ func StartSimSwitch(p *tea.Program, idle <-chan bool, movement <-chan bool) {
 
 // Preselect simulation:
 func SwitchSimulation(Idle bool, Motion bool) {
+	stop_sim <- true
 	if Idle {
 		go SimulateIdleFrames(len(arms), frames_channel)
 	} else {
-		stop_sim <- true
-	}
-	if Motion {
-		//go SimulateMotionFrames(len(arms), frames_channel)
-	} else {
-		stop_sim <- true
+		go SimulateMotionFrames(id_loopback, frames_channel)
 	}
 }
 
@@ -193,7 +191,7 @@ func SimulateIdleFrames(count int, tx_frame chan<- DataFrame) {
 
 // Calculate a linear movement between Setpoints
 // Set field "time_slots" to > 1sec for correct frames, < 1sec for frame Timeouts
-func SimulateMotionFrames(count int, id <-chan int, tx_frame chan<- DataFrame) {
+func SimulateMotionFrames(id <-chan int, tx_frame chan<- DataFrame) {
 	for {
 		select {
 		case <-stop_sim:

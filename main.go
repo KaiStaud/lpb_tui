@@ -9,8 +9,6 @@ import (
 	"time"
 
 	"lpb/tui"
-
-	"github.com/go-gl/mathgl/mgl64"
 )
 
 // TODO: Set machine into error mode, provide own module:
@@ -35,16 +33,17 @@ func main() {
 	frames := make(chan framehandling.DataFrame)
 	idle := make(chan bool)
 	movement := make(chan bool)
+	id_loopback := make(chan int)
 
-	framehandling.Init(frames)
+	framehandling.Init(frames, id_loopback)
 
 	// Create a channel for passing data from tui to tracking entity
-	data := make(chan mgl64.Vec3, 3)
+	data := make(chan int, 3)
 	tracking.Initialize(3, data)
 	tui.StartJobQueue(data)
 
 	p := tui.Launch(idle, movement)
-	go tracking.StartReceiveQueue(p, data)
+	go tracking.StartTransmitReceiveQueue(p, data, id_loopback)
 	framehandling.StartSimSwitch(p, idle, movement)
 
 	//TODO: Use Waitgroup!

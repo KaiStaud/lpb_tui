@@ -101,3 +101,18 @@ func GetCoordinatesByName(name string) (error, mgl64.Vec3) {
 		return nil, mgl64.Vec3{matches[0].X, matches[0].Y, matches[0].Z}
 	}
 }
+
+// Retrieve TCP vector by name.
+// Returns nil and not-null-vector if name is matches exactly once
+func GetIDByName(name string) (error, int) {
+	var matches []Coordinates
+	db.Where("id = ?", name).Find(&matches)
+
+	if len(matches) == 0 {
+		return errors.New("No match found"), 0
+	} else if len(matches) > 1 {
+		return errors.New("Name used multiple times"), 0
+	} else {
+		return nil, int(matches[0].ID)
+	}
+}

@@ -30,8 +30,8 @@ var (
 	// Increment of progress per waypoint
 	increment float64
 
-	// Queue with waiting jobs:
-	jobqueue chan mgl64.Vec3
+	// Queue with waiting jobs: TODO: Should use id instead!
+	jobqueue chan int
 	// Waypoints of profile:
 	waypoints []mgl64.Vec2
 	index     int
@@ -45,17 +45,21 @@ var (
 /*
 Receive new programs,update queue on finish
 */
-func StartReceiveQueue(p *tea.Program, c <-chan mgl64.Vec3) {
+func StartTransmitReceiveQueue(p *tea.Program, rx <-chan int, id chan<- int) {
 	for {
 		select {
 		case <-stop_receiver:
 			return
-		case <-c:
+		case <-rx:
 			// Send tui a handshake signal, the program was received:
 			p.Send(tui.HandshakeMsg{})
+
+			// Push all waypoints into ringbuffer:
 			// Inform tui on all program states:
 			// When program is #1 send in progress
 			// Else sende pending
+			//Get ID from DB and send to simulation
+			id <- 0
 		default:
 		}
 	}
@@ -69,7 +73,7 @@ func PushProgress(progress float64) {
 /*
 * Initializes size of checkbox and resets logic to known state
  */
-func Initialize(radius float64, queue chan mgl64.Vec3) error {
+func Initialize(radius float64, queue chan int) error {
 	R = radius
 	jobqueue = queue
 	return nil
@@ -118,6 +122,7 @@ func CalculateMovementProgress(vec mgl64.Vec2) (progress_percent float64, err er
 		if IsTargetReached(R, vec, waypoints[index]) {
 			progress = progress + increment
 			index++
+			// TODO: Increment index of Ringbuffer
 			return progress, nil
 		} else {
 			return progress, errors.New("Waypoint not reached!")

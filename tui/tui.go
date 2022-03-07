@@ -18,7 +18,6 @@ import (
 	"github.com/charmbracelet/bubbles/textinput"
 	tea "github.com/charmbracelet/bubbletea"
 	"github.com/charmbracelet/lipgloss"
-	"github.com/go-gl/mathgl/mgl64"
 	"github.com/muesli/reflow/indent"
 	"github.com/muesli/termenv"
 )
@@ -56,13 +55,13 @@ var (
 
 	//Expose the logging channel in module
 	tuiLogs      chan<- string
-	jobqueue     chan<- mgl64.Vec3
+	jobqueue     chan<- int
 	idle_sim     chan<- bool
 	movement_sim chan<- bool
 )
 
 // Create channels for sending data across programm
-func StartJobQueue(queue chan<- mgl64.Vec3) {
+func StartJobQueue(queue chan<- int) {
 	jobqueue = queue
 
 }
