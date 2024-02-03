@@ -1,0 +1,12 @@
+# Comments are supported, using a #
+# The default section is [default], case insensitive
+
+servers = ["hid-master","drive-master","webui"]
+publish = ["drive-master","webui"]
+embedded-display = 1
+
+# Section map to subcommands
+[subcommand]
+in_subcommand = Wow
+[subcommand.sub]
+subcommand = true # could also be give as sub.subcommand=true

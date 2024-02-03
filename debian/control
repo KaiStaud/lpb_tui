@@ -1,0 +1,13 @@
+Source: canopen-textif
+Section: unknown
+Priority: optional
+Maintainer: sta <>
+Build-Depends: cmake, debhelper-compat (= 12), libncurses-dev,ecal,libecal-2.0-dev
+Standards-Version: 4.5.0
+Homepage: <insert the upstream URL, if relevant>
+
+Package: canopen-textif
+Architecture: any
+Multi-Arch: foreign
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: 

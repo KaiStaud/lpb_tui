@@ -1,0 +1,18 @@
+syntax = "proto3";
+
+package pb.Drive;
+
+message Drive
+{
+  enum MicroSteps
+  {
+    FULLSTEP   = 0;
+    HALFSTEP = 1;
+  }
+
+  int32  cid               = 1;
+  string name             = 2;
+  MicroSteps  us            = 3;
+  int32 set_position = 4;
+  int32 drive_position = 5;
+}
