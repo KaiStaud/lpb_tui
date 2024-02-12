@@ -6,8 +6,9 @@
 #export DEB_LDFLAGS_MAINT_APPEND = -Wl,--as-needed
 
 %:
-	dh $@  
-
-#override_dh_auto_configure:
-#	dh_auto_configure -- \
-#	      -DCMAKE_LIBRARY_ARCHITECTURE="$(DEB_TARGET_MULTIARCH)"
+	dh $@ 
+	git config --global --add safe.directory $(PWD)	
+override_dh_auto_configure:
+	cmake -Bbuild
+override_dh_auto_build:
+	cmake --build build
